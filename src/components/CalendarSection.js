@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { colors } from '../theme/colors';
 
@@ -6,17 +6,12 @@ import { colors } from '../theme/colors';
 const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
 
 // Generamos automáticamente los 31 días del mes
-const monthDays = Array.from({ length: 31 }, (_, index) => {
-  const dayNumber = index + 1;
-
-  return {
-    id: dayNumber,
-    date: String(dayNumber),
-    isSelected: dayNumber === 10, // 👈 Día 10 seleccionado en azul por defecto
-  };
-});
+const monthDays = Array.from({ length: 31 }, (_, index) => index + 1);
 
 export default function CalendarSection() {
+  // Estado para el día seleccionado (por defecto el día 10)
+  const [selectedDay, setSelectedDay] = useState(10);
+
   return (
     <View style={styles.container}>
       
@@ -34,25 +29,31 @@ export default function CalendarSection() {
 
         {/* 2. GRILLA DE LOS 31 DÍAS */}
         <View style={styles.gridContainer}>
-          {monthDays.map((item) => (
-            <TouchableOpacity 
-              key={item.id} 
-              style={[
-                styles.dayCell, 
-                item.isSelected && styles.dayCellSelected
-              ]}
-            >
-              {/* Espacio central libre para iconos de apps */}
+          {monthDays.map((dayNumber) => {
+            const isSelected = dayNumber === selectedDay;
 
-              {/* Número del día anclado bien abajo */}
-              <Text style={[
-                styles.dateNumber, 
-                item.isSelected && styles.dateNumberSelected
-              ]}>
-                {item.date}
-              </Text>
-            </TouchableOpacity>
-          ))}
+            return (
+              <TouchableOpacity 
+                key={dayNumber} 
+                style={[
+                  styles.dayCell, 
+                  isSelected && styles.dayCellSelected
+                ]}
+                onPress={() => setSelectedDay(dayNumber)}
+                activeOpacity={0.7}
+              >
+                {/* Espacio central libre para iconos de apps */}
+
+                {/* Número del día anclado bien abajo */}
+                <Text style={[
+                  styles.dateNumber, 
+                  isSelected && styles.dateNumberSelected
+                ]}>
+                  {dayNumber}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
       </View>
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
   calendarWrapper: {
     width: 364,              
     alignSelf: 'center',    
-    marginLeft: 15,         // 👈 Probemos desplazándolo 12 píxeles hacia la izquierda para ver el impacto visual
+    marginLeft: 15,
   },
 
   /* --- CABECERA DE DÍAS DE LA SEMANA --- */
@@ -113,13 +114,14 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   
-  // Celda seleccionada (Azul pleno)
+  // 🌟 Celda seleccionada/activa (Tus especificaciones exactas)
   dayCellSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: '#E0F0FF', // Fondo azul claro
+    borderColor: '#DBEDFF',     // Borde de 1px azul suave
+    borderWidth: 1,
   },
 
-  // Número del día
+  // Número del día inactivo
   dateNumber: {
     position: 'absolute',
     bottom: 4,              
@@ -127,7 +129,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',      
     color: colors.textPrimary,
   },
+
+  // 🌟 Número del día seleccionado (Tus especificaciones exactas)
   dateNumberSelected: {
-    color: '#FFFFFF',       
+    color: '#0088FF',    // Texto azul
+    fontWeight: 'bold',  // En negrita (bold)
   },
 });

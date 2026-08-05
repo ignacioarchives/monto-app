@@ -3,89 +3,67 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
+// 🎨 Tus íconos SVG personalizados
+import HouseIcon from '../assets/icons/house.svg';
+import SubIcon from '../assets/icons/sub.svg';
+import MetricIcon from '../assets/icons/metric.svg';
+import UserIcon from '../assets/icons/user.svg';
+
+const NAV_ITEMS = [
+  { id: 'home', label: 'Inicio', IconComponent: HouseIcon },
+  { id: 'subscriptions', label: 'Suscripciones', IconComponent: SubIcon },
+  { id: 'add', isActionButton: true },
+  { id: 'analytics', label: 'Estadísticas', IconComponent: MetricIcon },
+  { id: 'settings', label: 'Ajustes', IconComponent: UserIcon },
+];
+
 export default function BottomNavBar() {
   const [activeTab, setActiveTab] = useState('home');
 
   return (
     <View style={styles.container}>
-      
-      {/* 1. Inicio / Home */}
-      <TouchableOpacity 
-        style={styles.navItem} 
-        onPress={() => setActiveTab('home')}
-      >
-        <Ionicons 
-          name={activeTab === 'home' ? 'grid' : 'grid-outline'} 
-          size={22} 
-          color={activeTab === 'home' ? '#2563EB' : '#94A3B8'} 
-        />
-        <Text style={[
-          styles.navLabel, 
-          activeTab === 'home' && styles.navLabelActive
-        ]}>
-          Inicio
-        </Text>
-      </TouchableOpacity>
+      {NAV_ITEMS.map((item) => {
+        // Renderizado del botón flotante (+)
+        if (item.isActionButton) {
+          return (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.addButton}
+              onPress={() => console.log('Abrir modal agregar')}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="add" size={28} color="#FFFFFF" />
+            </TouchableOpacity>
+          );
+        }
 
-      {/* 2. Calendario / Suscripciones */}
-      <TouchableOpacity 
-        style={styles.navItem} 
-        onPress={() => setActiveTab('calendar')}
-      >
-        <Ionicons 
-          name={activeTab === 'calendar' ? 'calendar' : 'calendar-outline'} 
-          size={22} 
-          color={activeTab === 'calendar' ? '#2563EB' : '#94A3B8'} 
-        />
-        <Text style={[
-          styles.navLabel, 
-          activeTab === 'calendar' && styles.navLabelActive
-        ]}>
-          Suscripciones
-        </Text>
-      </TouchableOpacity>
+        const { IconComponent } = item;
+        const isActive = activeTab === item.id;
 
-      {/* 3. Botón Central "+" (Agregar Suscripción) */}
-      <TouchableOpacity style={styles.addButton}>
-        <Ionicons name="add" size={28} color="#FFFFFF" />
-      </TouchableOpacity>
+        // Color del ícono: Azul (primary) cuando está activo, Gris cuando no
+        const iconColor = isActive ? colors.primary : colors.textSecondary;
 
-      {/* 4. Estadísticas / Análisis */}
-      <TouchableOpacity 
-        style={styles.navItem} 
-        onPress={() => setActiveTab('stats')}
-      >
-        <Ionicons 
-          name={activeTab === 'stats' ? 'stats-chart' : 'stats-chart-outline'} 
-          size={22} 
-          color={activeTab === 'stats' ? '#2563EB' : '#94A3B8'} 
-        />
-        <Text style={[
-          styles.navLabel, 
-          activeTab === 'stats' && styles.navLabelActive
-        ]}>
-          Métricas
-        </Text>
-      </TouchableOpacity>
+        return (
+          <TouchableOpacity
+            key={item.id}
+            style={styles.navItem}
+            onPress={() => setActiveTab(item.id)}
+            activeOpacity={0.7}
+          >
+            {/* Pasamos el color dinámico al SVG */}
+            <IconComponent 
+              width={24} 
+              height={24} 
+              color={iconColor} 
+            />
 
-      {/* 5. Perfil / Ajustes */}
-      <TouchableOpacity 
-        style={styles.navItem} 
-        onPress={() => setActiveTab('profile')}
-      >
-        <Ionicons 
-          name={activeTab === 'profile' ? 'person' : 'person-outline'} 
-          size={22} 
-          color={activeTab === 'profile' ? '#2563EB' : '#94A3B8'} 
-        />
-        <Text style={[
-          styles.navLabel, 
-          activeTab === 'profile' && styles.navLabelActive
-        ]}>
-          Perfil
-        </Text>
-      </TouchableOpacity>
-
+            {/* El estilo labelActive le aplica el color azul y la negrita (bold) */}
+            <Text style={[styles.label, isActive && styles.labelActive]}>
+              {item.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
@@ -93,51 +71,41 @@ export default function BottomNavBar() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    height: 65,
     backgroundColor: '#FFFFFF',
-    height: 70,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    paddingHorizontal: 12,
-    paddingBottom: 6, // Respiro inferior para barras de navegación
-    
-    // Sombras para darle elevación sobre el contenido
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 8,
+    borderTopColor: '#F0F0F0',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingHorizontal: 10,
   },
   navItem: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 3,
+    flex: 1,
   },
-  navLabel: {
+  label: {
     fontSize: 11,
-    fontWeight: '500',
-    color: '#94A3B8',
+    marginTop: 4,
+    color: colors.textSecondary,
+    fontWeight: '400',
   },
-  navLabelActive: {
-    color: '#2563EB',
-    fontWeight: '700',
+  labelActive: {
+    color: colors.primary, // Color azul activo
+    fontWeight: 'bold',    // 👈 Texto en negrita al estar activo
   },
-
-  /* --- BOTÓN CENTRAL FLOTANTE (+) --- */
   addButton: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#2563EB',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -20, // Lo eleva ligeramente por encima de la barra
-    shadowColor: '#2563EB',
+    marginBottom: 15,
+    elevation: 4,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 6,
-    elevation: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
 });
