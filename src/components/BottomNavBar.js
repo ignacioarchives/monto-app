@@ -1,35 +1,33 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
-// 🎨 Tus íconos SVG personalizados
 import HouseIcon from '../assets/icons/house.svg';
 import SubIcon from '../assets/icons/sub.svg';
 import MetricIcon from '../assets/icons/metric.svg';
 import UserIcon from '../assets/icons/user.svg';
 
 const NAV_ITEMS = [
-  { id: 'home', label: 'Inicio', IconComponent: HouseIcon },
-  { id: 'subscriptions', label: 'Suscripciones', IconComponent: SubIcon },
+  { id: 'Home', label: 'Inicio', IconComponent: HouseIcon },
+  { id: 'Subscriptions', label: 'Suscripciones', IconComponent: SubIcon },
   { id: 'add', isActionButton: true },
-  { id: 'analytics', label: 'Estadísticas', IconComponent: MetricIcon },
-  { id: 'settings', label: 'Ajustes', IconComponent: UserIcon },
+  { id: 'Analytics', label: 'Estadísticas', IconComponent: MetricIcon },
+  { id: 'User', label: 'Ajustes', IconComponent: UserIcon },
 ];
 
-export default function BottomNavBar() {
-  const [activeTab, setActiveTab] = useState('home');
+export default function BottomNavBar({ state, navigation }) {
+  const activeRouteName = state?.routes[state.index]?.name;
 
   return (
     <View style={styles.container}>
       {NAV_ITEMS.map((item) => {
-        // Renderizado del botón flotante (+)
         if (item.isActionButton) {
           return (
             <TouchableOpacity
               key={item.id}
               style={styles.addButton}
-              onPress={() => console.log('Abrir modal agregar')}
+              onPress={() => navigation.navigate('AddSubscriptionModal')}
               activeOpacity={0.8}
             >
               <Ionicons name="add" size={28} color="#FFFFFF" />
@@ -38,26 +36,21 @@ export default function BottomNavBar() {
         }
 
         const { IconComponent } = item;
-        const isActive = activeTab === item.id;
-
-        // Color del ícono: Azul (primary) cuando está activo, Gris cuando no
+        const isActive = activeRouteName === item.id;
         const iconColor = isActive ? colors.primary : colors.textSecondary;
 
         return (
           <TouchableOpacity
             key={item.id}
             style={styles.navItem}
-            onPress={() => setActiveTab(item.id)}
+            onPress={() => navigation.navigate(item.id)}
             activeOpacity={0.7}
           >
-            {/* Pasamos el color dinámico al SVG */}
             <IconComponent 
               width={24} 
               height={24} 
               color={iconColor} 
             />
-
-            {/* El estilo labelActive le aplica el color azul y la negrita (bold) */}
             <Text style={[styles.label, isActive && styles.labelActive]}>
               {item.label}
             </Text>
@@ -91,8 +84,8 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   labelActive: {
-    color: colors.primary, // Color azul activo
-    fontWeight: 'bold',    // 👈 Texto en negrita al estar activo
+    color: colors.primary,
+    fontWeight: 'bold',
   },
   addButton: {
     width: 48,
