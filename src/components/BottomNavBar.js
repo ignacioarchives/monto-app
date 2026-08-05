@@ -1,19 +1,15 @@
+// src/components/BottomNavBar.js (Prueba rápida con Ionicons)
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
-import HouseIcon from '../assets/icons/house.svg';
-import SubIcon from '../assets/icons/sub.svg';
-import MetricIcon from '../assets/icons/metric.svg';
-import UserIcon from '../assets/icons/user.svg';
-
 const NAV_ITEMS = [
-  { id: 'Home', label: 'Inicio', IconComponent: HouseIcon },
-  { id: 'Subscriptions', label: 'Suscripciones', IconComponent: SubIcon },
+  { id: 'Home', label: 'Inicio', iconName: 'home-outline', iconActive: 'home' },
+  { id: 'Subscriptions', label: 'Suscripciones', iconName: 'card-outline', iconActive: 'card' },
   { id: 'add', isActionButton: true },
-  { id: 'Analytics', label: 'Estadísticas', IconComponent: MetricIcon },
-  { id: 'User', label: 'Ajustes', IconComponent: UserIcon },
+  { id: 'Analytics', label: 'Estadísticas', iconName: 'stats-chart-outline', iconActive: 'stats-chart' },
+  { id: 'User', label: 'Ajustes', iconName: 'person-outline', iconActive: 'person' },
 ];
 
 export default function BottomNavBar({ state, navigation }) {
@@ -35,9 +31,9 @@ export default function BottomNavBar({ state, navigation }) {
           );
         }
 
-        const { IconComponent } = item;
         const isActive = activeRouteName === item.id;
         const iconColor = isActive ? colors.primary : colors.textSecondary;
+        const currentIcon = isActive ? item.iconActive : item.iconName;
 
         return (
           <TouchableOpacity
@@ -46,11 +42,7 @@ export default function BottomNavBar({ state, navigation }) {
             onPress={() => navigation.navigate(item.id)}
             activeOpacity={0.7}
           >
-            <IconComponent 
-              width={24} 
-              height={24} 
-              color={iconColor} 
-            />
+            <Ionicons name={currentIcon} size={24} color={iconColor} />
             <Text style={[styles.label, isActive && styles.labelActive]}>
               {item.label}
             </Text>
