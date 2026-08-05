@@ -41,7 +41,7 @@ export default function BottomNavBar() {
           styles.navLabel, 
           activeTab === 'calendar' && styles.navLabelActive
         ]}>
-          Calendario
+          Suscripciones
         </Text>
       </TouchableOpacity>
 
