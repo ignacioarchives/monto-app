@@ -4,23 +4,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
-// Importamos tus 4 pantallas reales
+// Provider Global
+import { SubscriptionProvider } from '../context/SubscriptionContext';
+
 import HomeScreen from '../screens/HomeScreen';
 import SubscriptionsScreen from '../screens/SubscriptionsScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import UserScreen from '../screens/UserScreen';
-
-// Importamos el componente del modal que creamos
 import AddSubscriptionModal from '../components/AddSubscriptionModal';
 
 export default function AppNavigator() {
   const [currentTab, setCurrentTab] = useState('Home');
-  const [isModalVisible, setIsModalVisible] = useState(false); // Estado para controlar el modal
-
-  const handleSaveSubscription = (newSub) => {
-    console.log('Nueva suscripción guardada:', newSub);
-    // Aquí luego conectaremos con el almacenamiento o contexto general
-  };
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const renderScreen = () => {
     switch (currentTab) {
@@ -38,99 +33,96 @@ export default function AppNavigator() {
   };
 
   return (
-    <NavigationContainer>
-      <View style={styles.container}>
-        {/* Contenido de la pantalla activa */}
-        <View style={styles.screenContainer}>
-          {renderScreen()}
-        </View>
+    <SubscriptionProvider>
+      <NavigationContainer>
+        <View style={styles.container}>
+          <View style={styles.screenContainer}>{renderScreen()}</View>
 
-        {/* Barra de navegación inferior con tus estilos originales */}
-        <View style={styles.tabBar}>
-          {/* 1. Inicio */}
-          <TouchableOpacity
-            style={styles.tabItem}
-            onPress={() => setCurrentTab('Home')}
-            activeOpacity={0.7}
-          >
-            <Ionicons 
-              name={currentTab === 'Home' ? 'home' : 'home-outline'} 
-              size={24} 
-              color={currentTab === 'Home' ? colors.primary : colors.textSecondary} 
-            />
-            <Text style={[styles.tabLabel, currentTab === 'Home' && styles.tabLabelActive]}>
-              Inicio
-            </Text>
-          </TouchableOpacity>
-
-          {/* 2. Suscripciones */}
-          <TouchableOpacity
-            style={styles.tabItem}
-            onPress={() => setCurrentTab('Subscriptions')}
-            activeOpacity={0.7}
-          >
-            <Ionicons 
-              name={currentTab === 'Subscriptions' ? 'card' : 'card-outline'} 
-              size={24} 
-              color={currentTab === 'Subscriptions' ? colors.primary : colors.textSecondary} 
-            />
-            <Text style={[styles.tabLabel, currentTab === 'Subscriptions' && styles.tabLabelActive]}>
-              Suscripciones
-            </Text>
-          </TouchableOpacity>
-
-          {/* 3. BOTÓN CENTRAL DE MÁS (+) - Abre el Modal */}
-          <View style={styles.centerButtonContainer}>
+          {/* Barra de navegación inferior */}
+          <View style={styles.tabBar}>
             <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => setIsModalVisible(true)}
-              activeOpacity={0.8}
+              style={styles.tabItem}
+              onPress={() => setCurrentTab('Home')}
+              activeOpacity={0.7}
             >
-              <Ionicons name="add" size={30} color="#FFFFFF" />
+              <Ionicons
+                name={currentTab === 'Home' ? 'home' : 'home-outline'}
+                size={24}
+                color={currentTab === 'Home' ? colors.primary : colors.textSecondary}
+              />
+              <Text style={[styles.tabLabel, currentTab === 'Home' && styles.tabLabelActive]}>
+                Inicio
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.tabItem}
+              onPress={() => setCurrentTab('Subscriptions')}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={currentTab === 'Subscriptions' ? 'card' : 'card-outline'}
+                size={24}
+                color={currentTab === 'Subscriptions' ? colors.primary : colors.textSecondary}
+              />
+              <Text
+                style={[
+                  styles.tabLabel,
+                  currentTab === 'Subscriptions' && styles.tabLabelActive,
+                ]}
+              >
+                Suscripciones
+              </Text>
+            </TouchableOpacity>
+
+            <View style={styles.centerButtonContainer}>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => setIsModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="add" size={30} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              style={styles.tabItem}
+              onPress={() => setCurrentTab('Analytics')}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={currentTab === 'Analytics' ? 'stats-chart' : 'stats-chart-outline'}
+                size={24}
+                color={currentTab === 'Analytics' ? colors.primary : colors.textSecondary}
+              />
+              <Text style={[styles.tabLabel, currentTab === 'Analytics' && styles.tabLabelActive]}>
+                Estadísticas
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.tabItem}
+              onPress={() => setCurrentTab('User')}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={currentTab === 'User' ? 'person' : 'person-outline'}
+                size={24}
+                color={currentTab === 'User' ? colors.primary : colors.textSecondary}
+              />
+              <Text style={[styles.tabLabel, currentTab === 'User' && styles.tabLabelActive]}>
+                Ajustes
+              </Text>
             </TouchableOpacity>
           </View>
 
-          {/* 4. Estadísticas */}
-          <TouchableOpacity
-            style={styles.tabItem}
-            onPress={() => setCurrentTab('Analytics')}
-            activeOpacity={0.7}
-          >
-            <Ionicons 
-              name={currentTab === 'Analytics' ? 'stats-chart' : 'stats-chart-outline'} 
-              size={24} 
-              color={currentTab === 'Analytics' ? colors.primary : colors.textSecondary} 
-            />
-            <Text style={[styles.tabLabel, currentTab === 'Analytics' && styles.tabLabelActive]}>
-              Estadísticas
-            </Text>
-          </TouchableOpacity>
-
-          {/* 5. Ajustes / Usuario */}
-          <TouchableOpacity
-            style={styles.tabItem}
-            onPress={() => setCurrentTab('User')}
-            activeOpacity={0.7}
-          >
-            <Ionicons 
-              name={currentTab === 'User' ? 'person' : 'person-outline'} 
-              size={24} 
-              color={currentTab === 'User' ? colors.primary : colors.textSecondary} 
-            />
-            <Text style={[styles.tabLabel, currentTab === 'User' && styles.tabLabelActive]}>
-              Ajustes
-            </Text>
-          </TouchableOpacity>
+          <AddSubscriptionModal
+            visible={isModalVisible}
+            onClose={() => setIsModalVisible(false)}
+          />
         </View>
-
-        {/* Modal de adición conectado a la barra */}
-        <AddSubscriptionModal
-          visible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
-          onSave={handleSaveSubscription}
-        />
-      </View>
-    </NavigationContainer>
+      </NavigationContainer>
+    </SubscriptionProvider>
   );
 }
 
@@ -143,7 +135,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabBar: {
-    height: 90, // Mantenemos tu altura personalizada
+    height: 90,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
