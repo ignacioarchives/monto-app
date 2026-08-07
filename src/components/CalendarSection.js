@@ -79,23 +79,26 @@ export default function CalendarSection() {
             const subsOnThisDay = subscriptions.filter((s) => s.day === dayNumber);
             const hasSubscription = subsOnThisDay.length > 0;
 
+            // NUEVA LÓGICA: El día es visualmente "activo" si lo tocaste o si tiene un cobro
+            const isVisuallyActive = isSelected || hasSubscription;
+
             return (
               <TouchableOpacity 
                 key={dayNumber} 
                 style={[
                   styles.dayCell, 
-                  isSelected && styles.dayCellSelected
+                  isVisuallyActive && styles.dayCellSelected // 👈 Se pinta de azul si cumple la condición
                 ]}
-                onPress={() => handleDayPress(dayNumber)} // 👈 Ahora abre el modal si hay cobros
+                onPress={() => handleDayPress(dayNumber)}
                 activeOpacity={0.7}
               >
                 {/* Espacio central: Indicador de Suscripción */}
                 {hasSubscription && (
-                  <View style={[styles.indicatorDot, isSelected && styles.indicatorDotSelected]}>
+                  <View style={[styles.indicatorDot, isVisuallyActive && styles.indicatorDotSelected]}>
                      <Ionicons 
                        name="card" 
                        size={12} 
-                       color={isSelected ? '#0088FF' : '#FFFFFF'} 
+                       color={isVisuallyActive ? '#0088FF' : '#FFFFFF'} 
                      />
                   </View>
                 )}
@@ -103,7 +106,7 @@ export default function CalendarSection() {
                 {/* Número del día anclado bien abajo */}
                 <Text style={[
                   styles.dateNumber, 
-                  isSelected && styles.dateNumberSelected
+                  isVisuallyActive && styles.dateNumberSelected // 👈 Texto azul/bold si cumple la condición
                 ]}>
                   {dayNumber}
                 </Text>
