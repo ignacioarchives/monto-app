@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { useSubscriptions } from '../context/SubscriptionContext';
 
-// Lista de plataformas populares con sus 3 planes correspondientes
+// Lista de plataformas populares con sus 3 planes coSrresponSdientes
 const POPULAR_SERVICES = [
   {
     id: 'p1',
