@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../theme/colors';
-import { useSubscriptions } from '../context/SubscriptionContext';
+import { colors } from '../../theme/colors';
+import { useSubscriptions } from '../../context/SubscriptionContext';
 
 // Días de la semana para la cabecera de las columnas
 const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];

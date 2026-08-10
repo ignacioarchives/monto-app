@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../theme/colors';
-import { useSubscriptions } from '../context/SubscriptionContext';
+import { colors, semanticColors } from '../../theme/colors';
+import { typography } from '../../theme/typography';
+import { useSubscriptions } from '../../context/SubscriptionContext';
 
 // Helper para obtener el nombre del mes actual en español
 const monthNames = [
@@ -78,61 +79,55 @@ const styles = StyleSheet.create({
   /* ===== ESTILOS TARJETA AZUL ===== */
   cardBlue: {
     flex: 1,
-    backgroundColor: colors.primary, // #2563EB
+    backgroundColor: colors.primary[500], // #2563EB
     borderRadius: 20,
     padding: 16,
     height: 130,
     justifyContent: 'flex-start',
   },
   topLabelBlue: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#FFFFFF',
+    ...typography.caption,
+    color: semanticColors.text.inverse,
   },
   bottomGroupBlue: {
     marginTop: 12,
     gap: 2,
   },
   appNameBlue: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    ...typography.h3,
+    color: semanticColors.text.inverse,
     opacity: 0.95,
   },
   amountBlue: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.displayMedium,
+    color: semanticColors.text.inverse,
   },
 
   /* ===== ESTILOS TARJETA BLANCA ===== */
   cardWhite: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: semanticColors.background.card,
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: colors.cardBorder, // #E2E8F0
+    borderColor: semanticColors.border.subtle,
     padding: 16,
     height: 130,
     justifyContent: 'flex-start',
   },
   topLabelWhite: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: colors.textSecondary,
+    ...typography.caption,
+    color: semanticColors.text.secondary,
   },
   bottomGroupWhite: {
     marginTop: 12,
     gap: 2,
   },
   monthWhite: {
-    fontSize: 15, // Mismo tamaño que el nombre de la app (appNameBlue)
-    fontWeight: '600',
-    color: colors.textSecondary,
+    ...typography.h3,
+    color: semanticColors.text.secondary,
   },
   amountWhite: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.primary, // Número resaltado en Azul
+    ...typography.displayMedium,
+    color: colors.primary[500], // Número resaltado en Azul
   },
 });

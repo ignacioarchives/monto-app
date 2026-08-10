@@ -14,7 +14,7 @@ export const colorTokens = {
   'color-primary-800': '#1E3A8A',
   'color-primary-900': '#172554',
 
-  // --- NEUTRALES & FONDOS CÁLIDOS ---
+  // --- NEUTRALES & FONDOS CÁLIDOS ---5
   'color-white': '#FFFFFF',
   'color-warm-bg': '#F2F1ED',
   'color-warm-card-subtle': '#FBFAF8',

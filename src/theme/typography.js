@@ -1,5 +1,3 @@
-// src/theme/typography.js
-
 /**
  * Design System - Monto App
  * Tokens de Tipografía (Fuente: Inter)

@@ -1,14 +1,16 @@
 import React from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
-// 1. Usamos la SafeAreaView oficial de Expo/React Native Safe Area
 import { SafeAreaView } from 'react-native-safe-area-context';
-// 2. Usamos la StatusBar oficial de Expo
 import { StatusBar } from 'expo-status-bar';
 
 import { colors } from '../theme/colors';
+
+// 1. Componente global
 import Header from '../components/Header';
-import SummarySection from '../components/SummarySection';
-import CalendarSection from '../components/CalendarSection';
+
+// 2. Componentes exclusivos de Home
+import SummarySection from '../components/home/SummarySection';
+import CalendarSection from '../components/home/CalendarSection';
 
 export default function HomeScreen() {
   return (
@@ -32,7 +34,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface?.warmBg || '#F2F1ED',
   },
   scrollContent: {
     paddingBottom: 100,
