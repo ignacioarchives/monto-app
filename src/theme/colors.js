@@ -45,6 +45,22 @@ export const colorTokens = {
   'color-purple-500': '#4C2FD5',
 };
 
+// Escala de neutros cálidos (reemplaza progresivamente a gray-400/gray-500/dark-900)
+export const warmScale = {
+  'warm-0': '#FFFFFF',   // Máxima elevación: modales, popups sobre tarjetas
+  'warm-25': '#FDFCFB',  // Superficie elevada, un paso por encima de la tarjeta
+  'warm-50': '#FBFAF8',  // Fondo de tarjeta estándar
+  'warm-75': '#F7F5F1',  // Elemento anidado dentro de una tarjeta (ej. fila de lista)
+  'warm-100': '#F2F1ED', // Fondo de pantalla
+  'warm-150': '#EAE7E1', // Sección secundaria de pantalla, fondo de inputs
+  'warm-200': '#E2DFD8', // Bordes sutiles, separadores livianos
+  'warm-300': '#D0CCC3', // Bordes marcados, líneas divisorias
+  'warm-400': '#A8A29A', // Texto placeholder, íconos inactivos
+  'warm-500': '#78716C', // Texto secundario
+  'warm-700': '#4A4542', // Texto secundario con énfasis
+  'warm-900': '#1C1917', // Texto principal
+};
+
 // Acceso agrupado por categoría
 export const colors = {
   primary: {
@@ -90,6 +106,20 @@ export const colors = {
     100: colorTokens['color-purple-100'],
     500: colorTokens['color-purple-500'],
   },
+  warm: {
+    0: warmScale['warm-0'],
+    25: warmScale['warm-25'],
+    50: warmScale['warm-50'],
+    75: warmScale['warm-75'],
+    100: warmScale['warm-100'],
+    150: warmScale['warm-150'],
+    200: warmScale['warm-200'],
+    300: warmScale['warm-300'],
+    400: warmScale['warm-400'],
+    500: warmScale['warm-500'],
+    700: warmScale['warm-700'],
+    900: warmScale['warm-900'],
+  },
 };
 
 // Tokens Semánticos (Uso directo según intención)
@@ -103,7 +133,7 @@ export const semanticColors = {
   },
   text: {
     primary: colors.text.darkPrimary,
-    secondary: colors.text.graySecondary,
+    secondary: warmScale['warm-500'],
     inverse: colors.surface.white,
     success: colors.green[500],
     warning: colors.orange[500],

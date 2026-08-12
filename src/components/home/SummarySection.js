@@ -4,6 +4,7 @@ import { ClockCountdown, ChartLineUp } from 'phosphor-react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
+import { shadows } from '../../theme/shadows';
 import { useSubscriptions } from '../../context/SubscriptionContext';
 
 export default function SummarySection() {
@@ -98,16 +99,18 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     height: 184,
     justifyContent: 'flex-start',
+    ...shadows.sm,
   },
   cardLight: {
     flex: 1,
-    backgroundColor: semanticColors.background.cardSubtle,
+    backgroundColor: colors.warm[25],
     borderRadius: borderRadius.xl,
-    borderWidth: 1.5,
-    borderColor: semanticColors.border.subtle,
+    borderWidth: 1,
+    borderColor: colors.warm[200],
     padding: spacing.lg,
     height: 184,
     justifyContent: 'flex-start',
+    ...shadows.sm,
   },
   iconContainerDark: {
     width: spacing['3xl'],
