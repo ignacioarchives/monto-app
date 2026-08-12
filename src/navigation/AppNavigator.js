@@ -7,7 +7,7 @@ import { SubscriptionProvider } from '../context/SubscriptionContext';
 import HomeScreen from '../screens/HomeScreen';
 import SubscriptionsScreen from '../screens/SubscriptionsScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
-import AddSubscriptionModal from '../components/AddSubscriptionModal';
+import AddSubscriptionModal from '../components/subscriptions/AddSubscriptionModal';
 import BottomNavBar from '../components/BottomNavBar';
 
 const TAB_ROUTES = ['Home', 'Subscriptions', 'Analytics'];

@@ -10,12 +10,15 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { ArrowLeft, X, CheckCircle, MagnifyingGlass, CaretRight } from 'phosphor-react-native';
-import { colors } from '../theme/colors';
-import { typography, fontWeights } from '../theme/typography';
-import { spacing, borderRadius } from '../theme/spacing';
-import ServiceIcon from './ServiceIcon';
-import { useAddSubscriptionForm } from '../hooks/useAddSubscriptionForm';
+import { ArrowLeft, X, MagnifyingGlass } from 'phosphor-react-native';
+import { colors } from '../../theme/colors';
+import { typography, fontWeights } from '../../theme/typography';
+import { spacing, borderRadius } from '../../theme/spacing';
+import { useAddSubscriptionForm } from '../../hooks/useAddSubscriptionForm';
+import FormInput from '../ui/FormInput';
+import TagBadge from '../ui/TagBadge';
+import PlanCard from '../ui/PlanCard';
+import ServiceListItem from './ServiceListItem';
 
 const TAGS = ['Entretenimiento', 'Música', 'Salud', 'Trabajo', 'Tecnología', 'Gaming', 'Otros'];
 
@@ -89,44 +92,25 @@ export default function AddSubscriptionModal({ visible, onClose }) {
 
               {/* Contenedor de las 3 Cards de Planes */}
               <View style={styles.plansContainer}>
-                {form.selectedService.plans.map((plan) => {
-                  const isSelected = form.selectedPlan?.id === plan.id;
-                  return (
-                    <TouchableOpacity
-                      key={plan.id}
-                      style={[styles.planCard, isSelected && styles.planCardSelected]}
-                      onPress={() => form.handleSelectPlan(plan)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.planName, isSelected && styles.planNameSelected]}>
-                        {plan.name}
-                      </Text>
-                      <Text style={[styles.planPrice, isSelected && styles.planPriceSelected]}>
-                        ${plan.price}
-                      </Text>
-                      {isSelected && (
-                        <View style={styles.checkBadge}>
-                          <CheckCircle weight="bold" size={18} color={colors.primary[500]} />
-                        </View>
-                      )}
-                    </TouchableOpacity>
-                  );
-                })}
+                {form.selectedService.plans.map((plan) => (
+                  <PlanCard
+                    key={plan.id}
+                    name={plan.name}
+                    price={plan.price}
+                    selected={form.selectedPlan?.id === plan.id}
+                    onPress={() => form.handleSelectPlan(plan)}
+                  />
+                ))}
               </View>
 
-              {/* Campo para la fecha de cobro / cuándo empieza */}
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Día de cobro / Cuándo empieza (Día 1 al 31)</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ej. 15"
-                  placeholderTextColor={colors.warm[400]}
-                  keyboardType="numeric"
-                  value={form.day}
-                  onChangeText={form.setDay}
-                  maxLength={2}
-                />
-              </View>
+              <FormInput
+                label="Día de cobro / Cuándo empieza (Día 1 al 31)"
+                placeholder="Ej. 15"
+                keyboardType="numeric"
+                value={form.day}
+                onChangeText={form.setDay}
+                maxLength={2}
+              />
 
               <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
                 <Text style={styles.saveButtonText}>Guardar Suscripción</Text>
@@ -148,79 +132,51 @@ export default function AddSubscriptionModal({ visible, onClose }) {
 
               <ScrollView style={{ maxHeight: 280 }} showsVerticalScrollIndicator={false}>
                 {form.filteredPopulars.map((service) => (
-                  <TouchableOpacity
+                  <ServiceListItem
                     key={service.id}
-                    style={styles.serviceItem}
+                    service={service}
                     onPress={() => form.handleSelectService(service)}
-                  >
-                    <View style={styles.serviceLeft}>
-                      <View style={styles.serviceIconWrapper}>
-                        <ServiceIcon serviceName={service.icon} size={40} />
-                      </View>
-                      <View>
-                        <Text style={styles.serviceName}>{service.name}</Text>
-                        <Text style={styles.serviceTag}>
-                          {service.plans ? `${service.plans.length} planes disponibles` : service.category}
-                        </Text>
-                      </View>
-                    </View>
-                    <CaretRight weight="bold" size={20} color={colors.warm[400]} />
-                  </TouchableOpacity>
+                  />
                 ))}
               </ScrollView>
             </View>
           ) : (
             /* FORMULARIO PERSONALIZADO (SIN OPCIÓN DE REPETIR) */
             <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Nombre de la suscripción</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ej. Gimnasio, Club..."
-                  placeholderTextColor={colors.warm[400]}
-                  value={form.name}
-                  onChangeText={form.setName}
-                />
-              </View>
+              <FormInput
+                label="Nombre de la suscripción"
+                placeholder="Ej. Gimnasio, Club..."
+                value={form.name}
+                onChangeText={form.setName}
+              />
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Precio ($)</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ej. 4500"
-                  placeholderTextColor={colors.warm[400]}
-                  keyboardType="numeric"
-                  value={form.price}
-                  onChangeText={form.setPrice}
-                />
-              </View>
+              <FormInput
+                label="Precio ($)"
+                placeholder="Ej. 4500"
+                keyboardType="numeric"
+                value={form.price}
+                onChangeText={form.setPrice}
+              />
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Día de cobro mensual (Día 1 al 31)</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ej. 10"
-                  placeholderTextColor={colors.warm[400]}
-                  keyboardType="numeric"
-                  value={form.day}
-                  onChangeText={form.setDay}
-                  maxLength={2}
-                />
-              </View>
+              <FormInput
+                label="Día de cobro mensual (Día 1 al 31)"
+                placeholder="Ej. 10"
+                keyboardType="numeric"
+                value={form.day}
+                onChangeText={form.setDay}
+                maxLength={2}
+              />
 
               <View style={styles.formGroup}>
                 <Text style={styles.label}>Categoría (Tag)</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   {TAGS.map((tag) => (
-                    <TouchableOpacity
+                    <TagBadge
                       key={tag}
-                      style={[styles.tagBadge, form.selectedTag === tag && styles.activeTagBadge]}
+                      label={tag}
+                      selected={form.selectedTag === tag}
                       onPress={() => form.setSelectedTag(tag)}
-                    >
-                      <Text style={[styles.tagText, form.selectedTag === tag && styles.activeTagText]}>
-                        {tag}
-                      </Text>
-                    </TouchableOpacity>
+                    />
                   ))}
                 </ScrollView>
               </View>
@@ -323,30 +279,6 @@ const styles = StyleSheet.create({
     ...typography.bodyMedium,
     color: colors.warm[900],
   },
-  serviceItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.warm[75],
-  },
-  serviceLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  serviceIconWrapper: {
-    marginRight: spacing.md,
-  },
-  serviceName: {
-    ...typography.bodyLarge,
-    fontWeight: fontWeights.semibold,
-    color: colors.warm[900],
-  },
-  serviceTag: {
-    ...typography.caption,
-    color: colors.warm[400],
-  },
   sectionLabel: {
     ...typography.bodyMedium,
     fontWeight: fontWeights.semibold,
@@ -358,44 +290,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: spacing.xl,
   },
-  planCard: {
-    flex: 1,
-    backgroundColor: colors.warm[50],
-    borderWidth: 1.5,
-    borderColor: colors.warm[150],
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginHorizontal: spacing.xs,
-    alignItems: 'center',
-    position: 'relative',
-  },
-  planCardSelected: {
-    borderColor: colors.primary[500],
-    backgroundColor: colors.primary[100],
-  },
-  planName: {
-    ...typography.caption,
-    fontWeight: fontWeights.semibold,
-    color: colors.warm[700],
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  planNameSelected: {
-    color: colors.primary[500],
-  },
-  planPrice: {
-    ...typography.bodyMedium,
-    fontWeight: fontWeights.bold,
-    color: colors.warm[900],
-  },
-  planPriceSelected: {
-    color: colors.primary[500],
-  },
-  checkBadge: {
-    position: 'absolute',
-    top: spacing.xs,
-    right: spacing.xs,
-  },
   formGroup: {
     marginBottom: spacing.lg,
   },
@@ -404,34 +298,6 @@ const styles = StyleSheet.create({
     fontWeight: fontWeights.medium,
     color: colors.warm[700],
     marginBottom: spacing.sm,
-  },
-  input: {
-    backgroundColor: colors.warm[50],
-    borderWidth: 1,
-    borderColor: colors.warm[150],
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    ...typography.bodyLarge,
-    color: colors.warm[900],
-  },
-  tagBadge: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.xl,
-    backgroundColor: colors.warm[75],
-    marginRight: spacing.sm,
-  },
-  activeTagBadge: {
-    backgroundColor: colors.primary[500],
-  },
-  tagText: {
-    ...typography.caption,
-    color: colors.warm[700],
-  },
-  activeTagText: {
-    color: colors.warm[0],
-    fontWeight: fontWeights.bold,
   },
   saveButton: {
     backgroundColor: colors.primary[500],
