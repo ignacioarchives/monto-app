@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-// 1. IMPORTAMOS TUS COLORES GLOBALES
-import { colors } from '../theme/colors';
-// 2. IMPORTAMOS EL CONTEXTO
+// 1. IMPORT COLORES GLOBALES
+import { colors, semanticColors } from '../theme/colors';
+import { typography } from '../theme/typography';
+// 2. IMPORT CONTEXTO
 import { useSubscriptions } from '../context/SubscriptionContext';
 
 // Helper para convertir el número de mes en texto en español de forma segura
@@ -40,9 +41,9 @@ export default function Header() {
 
   return (
     <View style={styles.headerContainer}>
-      <Text style={styles.title}>{subsText}</Text>
-      <Text style={styles.subtitle}>Próximo cobro →</Text>
-      <Text style={styles.dateBlue}>{nextDateText}</Text>
+      <Text style={[styles.textBase, styles.title]}>{subsText}</Text>
+      <Text style={[styles.textBase, styles.subtitle]}>Próximo cobro →</Text>
+      <Text style={[styles.textBase, styles.dateBlue]}>{nextDateText}</Text>
     </View>
   );
 }
@@ -53,23 +54,17 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     marginBottom: 20,
   },
+  textBase: {
+    ...typography.displayLarge,
+  },
   title: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    lineHeight: 40,
+    color: semanticColors.text.primary,
     marginBottom: 6,
   },
   subtitle: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    lineHeight: 40,
+    color: semanticColors.text.primary,
   },
   dateBlue: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.primary,
-    lineHeight: 40,
+    color: colors.primary[500],
   },
 });
