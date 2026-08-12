@@ -1,19 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, semanticColors } from '../../theme/colors';
-import { typography } from '../../theme/typography';
+import { typography, fontWeights } from '../../theme/typography';
+import { spacing, borderRadius } from '../../theme/spacing';
 import { useSubscriptions } from '../../context/SubscriptionContext';
-
-// Helper para obtener el nombre del mes actual en español
-const monthNames = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-];
 
 export default function SummarySection() {
   const { subscriptions } = useSubscriptions();
 
-  // 1. Lógica para la tarjeta azul (Suscripción más costosa)
+  // 1. Suscripción más costosa
   let mostExpensiveName = 'Sin datos';
   let mostExpensivePrice = '';
 
@@ -28,43 +23,54 @@ export default function SummarySection() {
     }
   }
 
-  // 2. Lógica para la tarjeta blanca (Total del mes)
+  // 2. Total del mes
   const totalAmount = subscriptions.reduce((sum, sub) => {
     return sum + (Number(sub.price) || 0);
   }, 0);
-
   const formattedTotal = `$${totalAmount.toLocaleString('es-AR')}`;
-  const currentMonthName = monthNames[new Date().getMonth()];
+
+  // 3. Comparación con el mes pasado — placeholder: SubscriptionContext aún no
+  // guarda histórico mensual (billingHistory), así que no hay con qué comparar todavía.
+  const lastMonthTotal = null;
+  const comparisonText =
+    lastMonthTotal === null
+      ? 'Sin datos del mes pasado'
+      : `${totalAmount - lastMonthTotal >= 0 ? '+' : '-'}${Math.abs(
+          totalAmount - lastMonthTotal
+        ).toLocaleString('es-AR')} /mes pasado`;
 
   return (
     <View style={styles.container}>
-      
-      {/* ===== TARJETA 1: AZUL (IZQUIERDA) ===== */}
-      <View style={styles.cardBlue}>
-        <Text style={styles.topLabelBlue}>Más costosa</Text>
-        <View style={styles.bottomGroupBlue}>
-          <Text style={styles.appNameBlue} numberOfLines={1}>
-            {mostExpensiveName}
-          </Text>
-          <Text style={styles.amountBlue} numberOfLines={1}>
-            {mostExpensivePrice}
-          </Text>
-        </View>
+      {/* ===== TARJETA 1: OSCURA (IZQUIERDA) — suscripción más costosa ===== */}
+      <View style={styles.cardDark}>
+        <View style={styles.iconCircleDark} />
+
+        <Text style={styles.nameDark} numberOfLines={1}>
+          {mostExpensiveName}
+        </Text>
+
+        <Text style={styles.priceRow} numberOfLines={1}>
+          <Text style={styles.priceAmountDark}>{mostExpensivePrice}</Text>
+          <Text style={styles.priceUnitDark}>/mes</Text>
+        </Text>
+
+        <Text style={styles.bottomLabelDark}>Más costosa</Text>
       </View>
 
-      {/* ===== TARJETA 2: BLANCA (DERECHA) ===== */}
-      <View style={styles.cardWhite}>
-        <Text style={styles.topLabelWhite}>Total del mes</Text>
-        <View style={styles.bottomGroupWhite}>
-          <Text style={styles.monthWhite} numberOfLines={1}>
-            {currentMonthName}
-          </Text>
-          <Text style={styles.amountWhite} numberOfLines={1}>
-            {formattedTotal}
-          </Text>
-        </View>
-      </View>
+      {/* ===== TARJETA 2: CLARA (DERECHA) — total del mes ===== */}
+      <View style={styles.cardLight}>
+        <View style={styles.iconCircleLight} />
 
+        <Text style={styles.nameLight} numberOfLines={1}>
+          Total del mes
+        </Text>
+
+        <Text style={styles.amountLight} numberOfLines={1}>
+          {formattedTotal}
+        </Text>
+
+        <Text style={styles.bottomLabelLight}>{comparisonText}</Text>
+      </View>
     </View>
   );
 }
@@ -72,62 +78,77 @@ export default function SummarySection() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    gap: 12,
-    paddingHorizontal: 24,
+    gap: spacing.md,
+    paddingHorizontal: spacing['2xl'],
   },
-
-  /* ===== ESTILOS TARJETA AZUL ===== */
-  cardBlue: {
+  cardDark: {
     flex: 1,
-    backgroundColor: colors.primary[500], // #2563EB
-    borderRadius: 20,
-    padding: 16,
-    height: 130,
+    backgroundColor: colors.primary[500],
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    height: 184,
     justifyContent: 'flex-start',
   },
-  topLabelBlue: {
-    ...typography.caption,
-    color: semanticColors.text.inverse,
-  },
-  bottomGroupBlue: {
-    marginTop: 12,
-    gap: 2,
-  },
-  appNameBlue: {
-    ...typography.h3,
-    color: semanticColors.text.inverse,
-    opacity: 0.95,
-  },
-  amountBlue: {
-    ...typography.displayMedium,
-    color: semanticColors.text.inverse,
-  },
-
-  /* ===== ESTILOS TARJETA BLANCA ===== */
-  cardWhite: {
+  cardLight: {
     flex: 1,
     backgroundColor: semanticColors.background.card,
-    borderRadius: 20,
+    borderRadius: borderRadius.xl,
     borderWidth: 1.5,
     borderColor: semanticColors.border.subtle,
-    padding: 16,
-    height: 130,
+    padding: spacing.lg,
+    height: 184,
     justifyContent: 'flex-start',
   },
-  topLabelWhite: {
+  iconCircleDark: {
+    width: spacing['2xl'],
+    height: spacing['2xl'],
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.surface.warmCardSubtle,
+  },
+  iconCircleLight: {
+    width: spacing['2xl'],
+    height: spacing['2xl'],
+    borderRadius: borderRadius.full,
+    backgroundColor: semanticColors.background.pill,
+  },
+  nameDark: {
+    ...typography.h3,
+    fontWeight: fontWeights.bold,
+    color: semanticColors.text.inverse,
+    marginTop: spacing.xs,
+  },
+  nameLight: {
+    ...typography.h3,
+    fontWeight: fontWeights.bold,
+    color: semanticColors.text.primary,
+    marginTop: spacing.xs,
+  },
+  priceRow: {
+    marginTop: spacing.xxs,
+  },
+  priceAmountDark: {
+    ...typography.h3,
+    color: semanticColors.text.inverse,
+  },
+  priceUnitDark: {
+    ...typography.bodyMedium,
+    color: semanticColors.text.inverse,
+    opacity: 0.7,
+  },
+  amountLight: {
+    ...typography.displayMedium,
+    color: colors.primary[500],
+    marginTop: spacing.xxs,
+  },
+  bottomLabelDark: {
+    ...typography.caption,
+    color: semanticColors.text.inverse,
+    opacity: 0.6,
+    marginTop: 'auto',
+  },
+  bottomLabelLight: {
     ...typography.caption,
     color: semanticColors.text.secondary,
-  },
-  bottomGroupWhite: {
-    marginTop: 12,
-    gap: 2,
-  },
-  monthWhite: {
-    ...typography.h3,
-    color: semanticColors.text.secondary,
-  },
-  amountWhite: {
-    ...typography.displayMedium,
-    color: colors.primary[500], // Número resaltado en Azul
+    marginTop: 'auto',
   },
 });
