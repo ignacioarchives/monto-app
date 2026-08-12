@@ -1,14 +1,15 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { House, Cardholder, ChartPieSlice } from 'phosphor-react-native';
 import { colors, semanticColors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing, borderRadius } from '../theme/spacing';
 
 const NAV_ITEMS = [
-  { id: 'Home', label: 'Home', iconName: 'home-outline', iconActive: 'home' },
-  { id: 'Subscriptions', label: 'Suscripciones', iconName: 'wallet-outline', iconActive: 'wallet' },
-  { id: 'Analytics', label: 'Informe', iconName: 'pie-chart-outline', iconActive: 'pie-chart' },
+  { id: 'Home', label: 'Home', Icon: House },
+  { id: 'Subscriptions', label: 'Suscripciones', Icon: Cardholder },
+  { id: 'Analytics', label: 'Informe', Icon: ChartPieSlice },
 ];
 
 // Altura compartida entre la barra y el botón de add, para que queden a la misma altura
@@ -22,7 +23,7 @@ export default function BottomNavBar({ state, navigation }) {
       <View style={styles.bar}>
         {NAV_ITEMS.map((item) => {
           const isActive = activeRouteName === item.id;
-          const currentIcon = isActive ? item.iconActive : item.iconName;
+          const IconComponent = item.Icon;
 
           return (
             <TouchableOpacity
@@ -31,7 +32,11 @@ export default function BottomNavBar({ state, navigation }) {
               onPress={() => navigation.navigate(item.id)}
               activeOpacity={0.7}
             >
-              <Ionicons name={currentIcon} size={24} color={semanticColors.text.inverse} />
+              <IconComponent
+                weight={isActive ? 'fill' : 'bold'}
+                size={24}
+                color={semanticColors.text.inverse}
+              />
               <Text style={styles.label}>{item.label}</Text>
             </TouchableOpacity>
           );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { ClockCountdown, ChartLineUp } from 'phosphor-react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
@@ -23,7 +24,7 @@ export default function SummarySection() {
     }
   }
 
-  // 2. Total del mes
+  // 2. Total del mes (= suma de todas las suscripciones activas)
   const totalAmount = subscriptions.reduce((sum, sub) => {
     return sum + (Number(sub.price) || 0);
   }, 0);
@@ -41,9 +42,11 @@ export default function SummarySection() {
 
   return (
     <View style={styles.container}>
-      {/* ===== TARJETA 1: OSCURA (IZQUIERDA) — suscripción más costosa ===== */}
+      {/* ===== TARJETA 1: AZUL (IZQUIERDA) — suscripción más costosa ===== */}
       <View style={styles.cardDark}>
-        <View style={styles.iconCircleDark} />
+        <View style={styles.iconContainerDark}>
+          <ClockCountdown weight="bold" size={18} color={colors.primary[500]} />
+        </View>
 
         <Text style={styles.nameDark} numberOfLines={1}>
           {mostExpensiveName}
@@ -54,22 +57,29 @@ export default function SummarySection() {
           <Text style={styles.priceUnitDark}>/mes</Text>
         </Text>
 
-        <Text style={styles.bottomLabelDark}>Más costosa</Text>
+        <Text style={styles.bottomLabelDark} numberOfLines={2}>
+          Próximo Cobro
+        </Text>
       </View>
 
-      {/* ===== TARJETA 2: CLARA (DERECHA) — total del mes ===== */}
+      {/* ===== TARJETA 2: CLARA (DERECHA) — gasto mensual ===== */}
       <View style={styles.cardLight}>
-        <View style={styles.iconCircleLight} />
+        <View style={styles.iconContainerLight}>
+          <ChartLineUp weight="bold" size={18} color={colors.purple[500]} />
+        </View>
 
         <Text style={styles.nameLight} numberOfLines={1}>
-          Total del mes
+          Gasto Mensual
         </Text>
 
-        <Text style={styles.amountLight} numberOfLines={1}>
-          {formattedTotal}
+        <Text style={styles.priceRow} numberOfLines={1}>
+          <Text style={styles.priceAmountLight}>{formattedTotal}</Text>
+          <Text style={styles.priceUnitLight}>/mes</Text>
         </Text>
 
-        <Text style={styles.bottomLabelLight}>{comparisonText}</Text>
+        <Text style={styles.bottomLabelLight} numberOfLines={2}>
+          {comparisonText}
+        </Text>
       </View>
     </View>
   );
@@ -91,7 +101,7 @@ const styles = StyleSheet.create({
   },
   cardLight: {
     flex: 1,
-    backgroundColor: semanticColors.background.card,
+    backgroundColor: semanticColors.background.cardSubtle,
     borderRadius: borderRadius.xl,
     borderWidth: 1.5,
     borderColor: semanticColors.border.subtle,
@@ -99,56 +109,66 @@ const styles = StyleSheet.create({
     height: 184,
     justifyContent: 'flex-start',
   },
-  iconCircleDark: {
-    width: spacing['2xl'],
-    height: spacing['2xl'],
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.surface.warmCardSubtle,
+  iconContainerDark: {
+    width: spacing['3xl'],
+    height: spacing['3xl'],
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.primary[100],
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  iconCircleLight: {
-    width: spacing['2xl'],
-    height: spacing['2xl'],
-    borderRadius: borderRadius.full,
-    backgroundColor: semanticColors.background.pill,
+  iconContainerLight: {
+    width: spacing['3xl'],
+    height: spacing['3xl'],
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.purple[100],
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   nameDark: {
     ...typography.h3,
-    fontWeight: fontWeights.bold,
     color: semanticColors.text.inverse,
-    marginTop: spacing.xs,
+    marginTop: spacing.sm,
   },
   nameLight: {
     ...typography.h3,
-    fontWeight: fontWeights.bold,
     color: semanticColors.text.primary,
-    marginTop: spacing.xs,
+    marginTop: spacing.sm,
   },
   priceRow: {
     marginTop: spacing.xxs,
   },
   priceAmountDark: {
     ...typography.h3,
+    fontWeight: fontWeights.bold,
     color: semanticColors.text.inverse,
   },
   priceUnitDark: {
     ...typography.bodyMedium,
     color: semanticColors.text.inverse,
-    opacity: 0.7,
   },
-  amountLight: {
-    ...typography.displayMedium,
-    color: colors.primary[500],
-    marginTop: spacing.xxs,
+  priceAmountLight: {
+    ...typography.h3,
+    fontWeight: fontWeights.bold,
+    color: semanticColors.text.primary,
+  },
+  priceUnitLight: {
+    ...typography.bodyMedium,
+    color: semanticColors.text.secondary,
   },
   bottomLabelDark: {
-    ...typography.caption,
+    ...typography.bodyMedium,
+    fontWeight: fontWeights.semibold,
     color: semanticColors.text.inverse,
-    opacity: 0.6,
+    opacity: 0.85,
+    height: spacing['4xl'],
     marginTop: 'auto',
   },
   bottomLabelLight: {
-    ...typography.caption,
+    ...typography.bodyMedium,
+    fontWeight: fontWeights.semibold,
     color: semanticColors.text.secondary,
+    height: spacing['4xl'],
     marginTop: 'auto',
   },
 });

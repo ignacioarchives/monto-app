@@ -39,6 +39,10 @@ export const colorTokens = {
   'color-red-100': '#FEE2E2',
   'color-red-500': '#EF4444',
   'color-red-700': '#B91C1C',
+
+  // --- PURPLE ---
+  'color-purple-100': '#DCD5FE',
+  'color-purple-500': '#4C2FD5',
 };
 
 // Acceso agrupado por categoría
@@ -81,6 +85,10 @@ export const colors = {
     100: colorTokens['color-red-100'],
     500: colorTokens['color-red-500'],
     700: colorTokens['color-red-700'],
+  },
+  purple: {
+    100: colorTokens['color-purple-100'],
+    500: colorTokens['color-purple-500'],
   },
 };
 

@@ -40,6 +40,6 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   innerContent: {
-    marginTop: 10,
+    marginTop: -40,
   },
 });
