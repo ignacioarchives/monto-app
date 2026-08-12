@@ -87,7 +87,7 @@ export const colors = {
 // Tokens Semánticos (Uso directo según intención)
 export const semanticColors = {
   background: {
-    screen: colors.surface.warmBg,
+    screen: colors.surface.white,
     card: colors.surface.white,
     cardSubtle: colors.surface.warmCardSubtle,
     pill: colors.surface.warmElement,

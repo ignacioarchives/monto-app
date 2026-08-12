@@ -18,7 +18,7 @@ export default function Header() {
 
   // 1. Calculamos la cantidad total de suscripciones
   const totalSubs = subscriptions.length;
-  const subsText = totalSubs === 1 ? '1 Suscripción' : `${totalSubs} Suscripciones`;
+  const subsLabel = totalSubs === 1 ? 'Suscripción' : 'Suscripciones';
 
   // 2. Calculamos la fecha más cercana del próximo cobro
   let nextDateText = 'Sin próximos cobros'; // Por defecto si no hay nada cargado
@@ -41,9 +41,11 @@ export default function Header() {
 
   return (
     <View style={styles.headerContainer}>
-      <Text style={[styles.textBase, styles.title]}>{subsText}</Text>
+      <Text style={[styles.textBase, styles.title]}>
+        <Text style={styles.numberBlue}>{totalSubs}</Text> {subsLabel}
+      </Text>
       <Text style={[styles.textBase, styles.subtitle]}>Próximo cobro →</Text>
-      <Text style={[styles.textBase, styles.dateBlue]}>{nextDateText}</Text>
+      <Text style={[styles.textBase, styles.dateNormal]}>{nextDateText}</Text>
     </View>
   );
 }
@@ -62,9 +64,12 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   subtitle: {
-    color: semanticColors.text.primary,
-  },
-  dateBlue: {
     color: colors.primary[500],
+  },
+  numberBlue: {
+    color: colors.primary[500],
+  },
+  dateNormal: {
+    color: semanticColors.text.primary,
   },
 });

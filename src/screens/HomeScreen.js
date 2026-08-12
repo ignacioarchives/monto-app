@@ -3,7 +3,7 @@ import { StyleSheet, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
-import { colors } from '../theme/colors';
+import { colors, semanticColors } from '../theme/colors';
 
 // 1. Componente global
 import Header from '../components/Header';
@@ -34,7 +34,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surface?.warmBg || '#F2F1ED',
+    backgroundColor: semanticColors.background.screen,
   },
   scrollContent: {
     paddingBottom: 100,
