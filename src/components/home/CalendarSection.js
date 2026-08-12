@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../theme/colors';
+import { colors, semanticColors } from '../../theme/colors';
+import { typography, fontWeights } from '../../theme/typography';
+import { spacing, borderRadius } from '../../theme/spacing';
 import { useSubscriptions } from '../../context/SubscriptionContext';
 
 // Días de la semana para la cabecera de las columnas
@@ -11,7 +13,7 @@ const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
 const monthDays = Array.from({ length: 31 }, (_, index) => index + 1);
 
 export default function CalendarSection() {
-  const { subscriptions, deleteSubscription } = useSubscriptions(); 
+  const { subscriptions, deleteSubscription } = useSubscriptions();
   const [selectedDay, setSelectedDay] = useState(10);
 
   // Estados para controlar el Modal y el item seleccionado
@@ -32,10 +34,10 @@ export default function CalendarSection() {
   // Manejador al tocar un día del calendario
   const handleDayPress = (dayNumber) => {
     setSelectedDay(dayNumber);
-    
+
     // Buscamos si hay suscripciones en este día específico
     const subsOnThisDay = subscriptions.filter((s) => s.day === dayNumber);
-    
+
     // Si hay cobros en este día, abrimos automáticamente el modal con el primero de ellos
     if (subsOnThisDay.length > 0) {
       setSelectedSub(subsOnThisDay[0]);
@@ -57,7 +59,7 @@ export default function CalendarSection() {
 
   return (
     <View style={styles.container}>
-      
+
       {/* ===== CONTENEDOR GENERAL DEL CALENDARIO ===== */}
       <View style={styles.calendarWrapper}>
 
@@ -74,7 +76,7 @@ export default function CalendarSection() {
         <View style={styles.gridContainer}>
           {monthDays.map((dayNumber) => {
             const isSelected = dayNumber === selectedDay;
-            
+
             // Buscamos si hay cobros este día para poner el indicador
             const subsOnThisDay = subscriptions.filter((s) => s.day === dayNumber);
             const hasSubscription = subsOnThisDay.length > 0;
@@ -83,10 +85,10 @@ export default function CalendarSection() {
             const isVisuallyActive = isSelected || hasSubscription;
 
             return (
-              <TouchableOpacity 
-                key={dayNumber} 
+              <TouchableOpacity
+                key={dayNumber}
                 style={[
-                  styles.dayCell, 
+                  styles.dayCell,
                   isVisuallyActive && styles.dayCellSelected // 👈 Se pinta de azul si cumple la condición
                 ]}
                 onPress={() => handleDayPress(dayNumber)}
@@ -95,17 +97,17 @@ export default function CalendarSection() {
                 {/* Espacio central: Indicador de Suscripción */}
                 {hasSubscription && (
                   <View style={[styles.indicatorDot, isVisuallyActive && styles.indicatorDotSelected]}>
-                     <Ionicons 
-                       name="card" 
-                       size={12} 
-                       color={isVisuallyActive ? '#0088FF' : '#FFFFFF'} 
+                     <Ionicons
+                       name="card"
+                       size={12}
+                       color={isVisuallyActive ? colors.primary[500] : colors.warm[0]}
                      />
                   </View>
                 )}
 
                 {/* Número del día anclado bien abajo */}
                 <Text style={[
-                  styles.dateNumber, 
+                  styles.dateNumber,
                   isVisuallyActive && styles.dateNumberSelected // 👈 Texto azul/bold si cumple la condición
                 ]}>
                   {dayNumber}
@@ -129,20 +131,20 @@ export default function CalendarSection() {
 
         {selectedDaySubscriptions.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="calendar-clear-outline" size={28} color="#CBD5E1" />
+            <Ionicons name="calendar-clear-outline" size={28} color={colors.warm[200]} />
             <Text style={styles.emptyText}>Día libre de cobros</Text>
           </View>
         ) : (
           selectedDaySubscriptions.map((sub) => (
-            <TouchableOpacity 
-              key={sub.id} 
+            <TouchableOpacity
+              key={sub.id}
               style={styles.subCard}
               activeOpacity={0.8}
               onPress={() => handleOpenModal(sub)}
             >
               <View style={styles.subCardLeft}>
                 <View style={styles.iconCircle}>
-                  <Ionicons name="sparkles" size={18} color="#2563EB" />
+                  <Ionicons name="sparkles" size={18} color={colors.primary[500]} />
                 </View>
                 <View>
                   <Text style={styles.subName}>{sub.name}</Text>
@@ -164,14 +166,14 @@ export default function CalendarSection() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            
+
             {/* Cabecera del Modal */}
             <View style={styles.modalHeader}>
               <View style={styles.modalIconContainer}>
-                <Ionicons name="shield-checkmark" size={24} color="#2563EB" />
+                <Ionicons name="shield-checkmark" size={24} color={colors.primary[500]} />
               </View>
               <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
-                <Ionicons name="close" size={20} color="#64748B" />
+                <Ionicons name="close" size={20} color={colors.warm[500]} />
               </TouchableOpacity>
             </View>
 
@@ -180,24 +182,24 @@ export default function CalendarSection() {
               <View style={styles.modalBody}>
                 <Text style={styles.modalSubName}>{selectedSub.name}</Text>
                 <Text style={styles.modalSubTag}>{selectedSub.tag || 'Suscripción mensual'}</Text>
-                
+
                 <View style={styles.priceContainerModal}>
                   <Text style={styles.priceLabel}>Monto a debitar</Text>
                   <Text style={styles.modalSubPrice}>${selectedSub.price}</Text>
                 </View>
 
                 <View style={styles.infoRow}>
-                  <Ionicons name="calendar-outline" size={16} color="#64748B" />
+                  <Ionicons name="calendar-outline" size={16} color={colors.warm[500]} />
                   <Text style={styles.infoText}>Fecha de cobro: Día {selectedSub.day} de cada mes</Text>
                 </View>
 
                 {/* Acciones del Modal */}
                 <View style={styles.modalActions}>
-                  <TouchableOpacity 
-                    style={styles.deleteButton} 
+                  <TouchableOpacity
+                    style={styles.deleteButton}
                     onPress={() => handleDelete(selectedSub.id)}
                   >
-                    <Ionicons name="trash-outline" size={18} color="#EF4444" style={{ marginRight: 6 }} />
+                    <Ionicons name="trash-outline" size={18} color={colors.red[500]} style={{ marginRight: spacing.sm }} />
                     <Text style={styles.deleteButtonText}>Eliminar suscripción</Text>
                   </TouchableOpacity>
                 </View>
@@ -214,182 +216,183 @@ export default function CalendarSection() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 28,
+    marginTop: spacing['3xl'], // 32, valor original era 28 (sin token exacto)
     width: '100%',
-    alignItems: 'center',    
-    paddingHorizontal: 16,  
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
   },
 
   /* --- CONTENEDOR PRINCIPAL DEL CALENDARIO --- */
   calendarWrapper: {
-    width: 364,              
-    alignSelf: 'center',    
-    marginLeft: 15,
+    width: 364, // ancho de grilla calculado (7 columnas x 44px + gaps), no es un valor de espaciado
+    alignSelf: 'center',
+    marginLeft: spacing.lg, // 16, valor original era 15
   },
 
   /* --- CABECERA DE DÍAS DE LA SEMANA --- */
   weekHeaderRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 7,                 
-    marginBottom: 8,
+    gap: spacing.sm, // 8, valor original era 7
+    marginBottom: spacing.sm,
   },
   weekDayCell: {
-    width: 44,              
+    width: 44, // ancho de celda de grilla (ver dayCell)
     alignItems: 'center',
     justifyContent: 'center',
   },
   weekDayText: {
-    fontSize: 13,           
-    fontWeight: 'bold',     
-    color: '#2563EB',       
+    ...typography.bodySmall,
+    fontWeight: fontWeights.bold,
+    color: colors.primary[500],
   },
 
   /* --- GRILLA DEL CALENDARIO --- */
   gridContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',       
-    gap: 7,                 
+    flexWrap: 'wrap',
+    gap: spacing.sm, // 8, valor original era 7
   },
-  
+
   dayCell: {
-    width: 44,              
-    height: 52,             
-    position: 'relative',   
+    width: 44, // ancho de celda de grilla
+    height: 52, // alto de celda de grilla
+    position: 'relative',
     alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.warm[0],
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.warm[150],
   },
   dayCellSelected: {
-    backgroundColor: '#E0F0FF', 
-    borderColor: '#DBEDFF',     
+    backgroundColor: colors.primary[100],
+    borderColor: colors.primary[100],
     borderWidth: 1,
   },
 
   /* --- INDICADOR DE SUSCRIPCIÓN --- */
   indicatorDot: {
-    marginTop: 6,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#2563EB', 
+    marginTop: spacing.sm, // 8, valor original era 6
+    width: spacing.xl, // 20
+    height: spacing.xl, // 20
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary[500],
     alignItems: 'center',
     justifyContent: 'center',
   },
   indicatorDotSelected: {
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: colors.warm[0],
   },
 
   dateNumber: {
     position: 'absolute',
-    bottom: 4,              
-    fontSize: 15,           
-    fontWeight: '500',      
-    color: colors.textPrimary,
+    bottom: spacing.xs, // 4
+    ...typography.bodyLarge, // 16, valor original era 15
+    fontWeight: fontWeights.medium,
+    color: semanticColors.text.primary,
   },
   dateNumberSelected: {
-    color: '#0088FF',    
-    fontWeight: 'bold',  
+    color: colors.primary[500],
+    fontWeight: fontWeights.bold,
   },
 
   /* --- DETALLES DEL DÍA --- */
   detailsContainer: {
     width: '100%',
-    marginTop: 24,
-    paddingHorizontal: 8,
+    marginTop: spacing['2xl'],
+    paddingHorizontal: spacing.sm,
   },
   detailsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   detailsTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1E293B',
+    ...typography.bodyLarge,
+    fontWeight: fontWeights.bold,
+    color: colors.warm[900],
   },
   countBadge: {
-    backgroundColor: '#DBEDFF',
-    color: '#0088FF',
-    fontWeight: 'bold',
-    fontSize: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
+    backgroundColor: colors.primary[100],
+    color: colors.primary[500],
+    ...typography.caption,
+    fontWeight: fontWeights.bold,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+    borderRadius: borderRadius.md,
     overflow: 'hidden',
   },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 24,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 16,
+    paddingVertical: spacing['2xl'],
+    backgroundColor: colors.warm[50],
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderColor: colors.warm[100],
   },
   emptyText: {
-    marginTop: 8,
-    fontSize: 14,
-    color: '#94A3B8',
+    marginTop: spacing.sm,
+    ...typography.bodyMedium,
+    color: colors.warm[400],
   },
   subCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 8,
+    backgroundColor: colors.warm[0],
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderColor: colors.warm[100],
   },
   subCardLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   iconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#EFF6FF',
+    width: spacing['4xl'], // 40, valor original era 36
+    height: spacing['4xl'],
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary[100],
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: spacing.md,
   },
   subName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1E293B',
+    ...typography.bodyLarge, // 16, valor original era 15
+    fontWeight: fontWeights.semibold,
+    color: colors.warm[900],
   },
   subTag: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    ...typography.caption,
+    color: colors.warm[500],
+    marginTop: spacing.xxs,
   },
   subPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#0F172A',
+    ...typography.bodyLarge,
+    fontWeight: fontWeights.bold,
+    color: colors.warm[900],
   },
 
   /* --- ESTILOS DEL MODAL --- */
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    // rgba equivalente a colors.warm[900] al 60% de opacidad (no hay helper hex->rgba en el theme)
+    backgroundColor: 'rgba(28, 25, 23, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: spacing.xl,
   },
   modalContent: {
     width: '100%',
     maxWidth: 340,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 24,
-    shadowColor: '#000',
+    backgroundColor: colors.warm[0],
+    borderRadius: borderRadius.xl,
+    padding: spacing['2xl'],
+    shadowColor: colors.warm[900],
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.25,
     shadowRadius: 10,
@@ -399,21 +402,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   modalIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#EFF6FF',
+    width: spacing['5xl'], // 48, valor original era 44
+    height: spacing['5xl'],
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary[100],
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#F1F5F9',
+    width: spacing['3xl'], // 32
+    height: spacing['3xl'],
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.warm[100],
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -421,45 +424,43 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   modalSubName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0F172A',
+    ...typography.h2, // 20
+    fontWeight: fontWeights.bold,
+    color: colors.warm[900],
   },
   modalSubTag: {
-    fontSize: 13,
-    color: '#64748B',
-    marginTop: 2,
-    marginBottom: 20,
+    ...typography.bodySmall,
+    color: colors.warm[500],
+    marginTop: spacing.xxs,
+    marginBottom: spacing.xl,
   },
   priceContainerModal: {
     width: '100%',
-    backgroundColor: '#F8FAFC',
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 16,
+    backgroundColor: colors.warm[50],
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderColor: colors.warm[100],
   },
   priceLabel: {
-    fontSize: 12,
-    color: '#64748B',
-    fontWeight: '500',
-    marginBottom: 4,
+    ...typography.caption,
+    color: colors.warm[500],
+    marginBottom: spacing.xs,
   },
   modalSubPrice: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0284C7',
+    ...typography.h1, // 24/bold, match exacto
+    color: colors.primary[500],
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: spacing['2xl'],
   },
   infoText: {
-    marginLeft: 8,
-    fontSize: 13,
-    color: '#475569',
+    marginLeft: spacing.sm,
+    ...typography.bodySmall,
+    color: colors.warm[700],
   },
   modalActions: {
     width: '100%',
@@ -468,15 +469,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FEF2F2',
-    paddingVertical: 12,
-    borderRadius: 12,
+    backgroundColor: colors.red[100],
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: '#FEE2E2',
+    borderColor: colors.red[100],
   },
   deleteButtonText: {
-    color: '#EF4444',
-    fontWeight: '600',
-    fontSize: 14,
+    ...typography.bodyMedium,
+    fontWeight: fontWeights.semibold,
+    color: colors.red[500],
   },
 });

@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 // 1. IMPORT COLORES GLOBALES
 import { colors, semanticColors } from '../theme/colors';
 import { typography } from '../theme/typography';
+import { spacing } from '../theme/spacing';
 // 2. IMPORT CONTEXTO
 import { useSubscriptions } from '../context/SubscriptionContext';
 
@@ -52,16 +53,16 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    marginBottom: 20,
+    paddingHorizontal: spacing['2xl'],
+    paddingTop: spacing['5xl'] + spacing.md, // 60
+    marginBottom: spacing.xl,
   },
   textBase: {
     ...typography.displayLarge,
   },
   title: {
     color: semanticColors.text.primary,
-    marginBottom: 6,
+    marginBottom: spacing.sm, // 8, valor original era 6 (sin token exacto)
   },
   subtitle: {
     color: colors.primary[500],

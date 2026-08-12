@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 import { colors, semanticColors } from '../theme/colors';
+import { spacing } from '../theme/spacing';
 
 // 1. Componente global
 import Header from '../components/Header';
@@ -37,9 +38,9 @@ const styles = StyleSheet.create({
     backgroundColor: semanticColors.background.screen,
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: spacing['5xl'] * 2 + spacing.xxs, // 100
   },
   innerContent: {
-    marginTop: -40,
+    marginTop: -spacing['4xl'], // -40
   },
 });
