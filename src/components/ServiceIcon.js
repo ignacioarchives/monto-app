@@ -50,8 +50,17 @@ function normalizeServiceName(name) {
     .replace(/[^a-z0-9]/g, ''); // saca espacios/símbolos
 }
 
-export default function ServiceIcon({ serviceName, size = spacing['3xl'] }) {
+// Fondo clarito derivado del color de marca, para que el logo resalte sobre él (usado con `tinted`)
+function hexToTintedBackground(hex, alpha = 0.24) {
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+export default function ServiceIcon({ serviceName, size = spacing['3xl'], variant = 'square', tinted = false }) {
   const icon = SERVICE_ICONS[normalizeServiceName(serviceName)];
+  const containerRadius = variant === 'circle' ? borderRadius.full : borderRadius.sm;
 
   if (!icon) {
     const initial = (serviceName || '').trim().charAt(0).toUpperCase() || '?';
@@ -63,9 +72,10 @@ export default function ServiceIcon({ serviceName, size = spacing['3xl'] }) {
   }
 
   const iconSize = size * 0.5625; // misma proporción usada en los íconos de SummarySection (18/32)
+  const backgroundColor = tinted ? hexToTintedBackground(icon.hex) : colors.warm[25];
 
   return (
-    <View style={[styles.iconContainer, { width: size, height: size }]}>
+    <View style={[styles.iconContainer, { width: size, height: size, borderRadius: containerRadius, backgroundColor }]}>
       <Svg width={iconSize} height={iconSize} viewBox="0 0 24 24">
         <Path d={icon.path} fill={`#${icon.hex}`} />
       </Svg>

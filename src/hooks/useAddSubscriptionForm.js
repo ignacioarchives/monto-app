@@ -142,6 +142,7 @@ export function useAddSubscriptionForm() {
     const newSub = {
       id: Date.now().toString(),
       name: finalName,
+      icon: selectedService?.icon || null,
       price: parseFloat(price),
       day: parseInt(day),
       tag: selectedTag,

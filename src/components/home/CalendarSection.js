@@ -5,6 +5,7 @@ import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { useSubscriptions } from '../../context/SubscriptionContext';
+import ServiceIcon from '../ServiceIcon';
 
 // Días de la semana para la cabecera de las columnas
 const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
@@ -94,14 +95,17 @@ export default function CalendarSection() {
                 onPress={() => handleDayPress(dayNumber)}
                 activeOpacity={0.7}
               >
-                {/* Espacio central: Indicador de Suscripción */}
+                {/* Espacio central: Indicador de Suscripción (íconos de las marcas que cobran ese día, hasta 2) */}
                 {hasSubscription && (
-                  <View style={[styles.indicatorDot, isVisuallyActive && styles.indicatorDotSelected]}>
-                     <Ionicons
-                       name="card"
-                       size={12}
-                       color={isVisuallyActive ? colors.primary[500] : colors.warm[0]}
-                     />
+                  <View style={styles.indicatorStack}>
+                    {subsOnThisDay.slice(0, 2).map((sub, index) => (
+                      <View
+                        key={sub.id}
+                        style={[styles.indicatorIconWrapper, index > 0 && styles.indicatorIconOverlap]}
+                      >
+                        <ServiceIcon serviceName={sub.icon || sub.name} size={16} variant="circle" tinted />
+                      </View>
+                    ))}
                   </View>
                 )}
 
@@ -271,17 +275,15 @@ const styles = StyleSheet.create({
   },
 
   /* --- INDICADOR DE SUSCRIPCIÓN --- */
-  indicatorDot: {
-    marginTop: spacing.sm, // 8, valor original era 6
-    width: spacing.xl, // 20
-    height: spacing.xl, // 20
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.primary[500],
-    alignItems: 'center',
-    justifyContent: 'center',
+  indicatorStack: {
+    flexDirection: 'row',
+    marginTop: spacing.sm, // 8, más cerca del número de abajo
   },
-  indicatorDotSelected: {
-    backgroundColor: colors.warm[0],
+  indicatorIconWrapper: {
+    borderRadius: borderRadius.full,
+  },
+  indicatorIconOverlap: {
+    marginLeft: -spacing.xs, // 4, para que el segundo ícono se superponga al primero
   },
 
   dateNumber: {
