@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { CaretDown, CalendarBlank, ShieldCheck, X, Trash } from 'phosphor-react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
+import { shadows } from '../../theme/shadows';
 import { useSubscriptions } from '../../context/SubscriptionContext';
 import ServiceIcon from '../ServiceIcon';
 import { getCalendarDayInfo } from '../../utils/calendarHelpers';
 
-// Días de la semana para la cabecera de las columnas
-const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+// Días de la semana para la cabecera de las columnas (sin tildes, igual que el Figma)
+const weekDays = ['LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB', 'DOM'];
 
 // Generamos automáticamente los 31 días del mes
 const monthDays = Array.from({ length: 31 }, (_, index) => index + 1);
+
+const monthNames = [
+  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+];
 
 export default function CalendarSection() {
   const { subscriptions, deleteSubscription } = useSubscriptions();
@@ -20,6 +26,11 @@ export default function CalendarSection() {
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth();
   const [selectedDay, setSelectedDay] = useState(today.getDate());
+
+  // Cobros este mes: todas las subs cobran una vez por mes (sin campo de frecuencia todavía)
+  const chargeCount = subscriptions.length;
+  const currentMonthLabel =
+    monthNames[currentMonth][0].toUpperCase() + monthNames[currentMonth].slice(1);
 
   // Estados para controlar el Modal y el item seleccionado
   const [modalVisible, setModalVisible] = useState(false);
@@ -65,10 +76,30 @@ export default function CalendarSection() {
   return (
     <View style={styles.container}>
 
-      {/* ===== CONTENEDOR GENERAL DEL CALENDARIO ===== */}
-      <View style={styles.calendarWrapper}>
+      {/* ===== TARJETA DEL CALENDARIO ===== */}
+      <View style={styles.card}>
 
-        {/* 1. CABECERA DE LOS DÍAS DE LA SEMANA */}
+        {/* 1. RESUMEN DEL MES + SELECTOR */}
+        <View style={styles.monthRow}>
+          {chargeCount === 0 ? (
+            <Text style={styles.monthSummaryEmpty}>No hay cobros este mes</Text>
+          ) : (
+            <Text style={styles.monthSummaryText}>
+              <Text style={styles.monthSummaryMuted}>Tenes </Text>
+              <Text style={styles.monthSummaryCount}>
+                {chargeCount} {chargeCount === 1 ? 'cobro' : 'cobros'}
+              </Text>
+              <Text style={styles.monthSummaryMuted}> este mes</Text>
+            </Text>
+          )}
+
+          <TouchableOpacity style={styles.monthPill} activeOpacity={0.7}>
+            <Text style={styles.monthPillText}>{currentMonthLabel}</Text>
+            <CaretDown weight="bold" size={10} color={semanticColors.text.secondary} style={styles.monthPillIcon} />
+          </TouchableOpacity>
+        </View>
+
+        {/* 2. CABECERA DE LOS DÍAS DE LA SEMANA */}
         <View style={styles.weekHeaderRow}>
           {weekDays.map((day, index) => (
             <View key={index} style={styles.weekDayCell}>
@@ -77,36 +108,38 @@ export default function CalendarSection() {
           ))}
         </View>
 
-        {/* 2. GRILLA DE LOS 31 DÍAS */}
+        {/* 3. GRILLA DE LOS 31 DÍAS */}
         <View style={styles.gridContainer}>
           {monthDays.map((dayNumber) => {
-            const isSelected = dayNumber === selectedDay;
-
             // Día real del mes actual vs. inexistente/pasado/hoy/futuro
             const { exists, status } = getCalendarDayInfo(currentYear, currentMonth, dayNumber, today);
             const isDisabled = !exists || status === 'past';
             const isToday = status === 'today';
+            const isSelected = dayNumber === selectedDay;
 
-            // Buscamos si hay cobros este día para poner el indicador (solo en días habilitados)
+            // Buscamos si hay cobros este día (nunca en días desactivados/pasados)
             const subsOnThisDay = isDisabled ? [] : subscriptions.filter((s) => s.day === dayNumber);
             const hasSubscription = subsOnThisDay.length > 0;
 
-            // NUEVA LÓGICA: El día es visualmente "activo" si lo tocaste o si tiene un cobro
-            const isVisuallyActive = !isDisabled && (isSelected || hasSubscription);
+            // "Hoy" y "seleccionado" comparten el mismo tratamiento (borde), pero
+            // un cobro real siempre gana por sobre ese indicador
+            const isHighlighted = !isDisabled && !hasSubscription && (isToday || isSelected);
+            const isFuturePlain = !isDisabled && !hasSubscription && !isHighlighted;
 
             return (
               <TouchableOpacity
                 key={dayNumber}
                 style={[
                   styles.dayCell,
-                  isVisuallyActive && styles.dayCellSelected, // 👈 Se pinta de azul si cumple la condición
-                  isToday && styles.dayCellToday,
+                  isFuturePlain && styles.dayCellFuture,
+                  isHighlighted && styles.dayCellHighlighted,
+                  hasSubscription && styles.dayCellCharged,
                 ]}
                 onPress={() => handleDayPress(dayNumber)}
                 activeOpacity={0.7}
                 disabled={isDisabled}
               >
-                {/* Espacio central: Indicador de Suscripción (íconos de las marcas que cobran ese día, hasta 2) */}
+                {/* Íconos de las marcas que cobran ese día (hasta 2) */}
                 {hasSubscription && (
                   <View style={styles.indicatorStack}>
                     {subsOnThisDay.slice(0, 2).map((sub, index) => (
@@ -114,7 +147,7 @@ export default function CalendarSection() {
                         key={sub.id}
                         style={[styles.indicatorIconWrapper, index > 0 && styles.indicatorIconOverlap]}
                       >
-                        <ServiceIcon serviceName={sub.icon || sub.name} size={16} variant="circle" tinted />
+                        <ServiceIcon serviceName={sub.icon || sub.name} size={14} variant="circle" tinted />
                       </View>
                     ))}
                   </View>
@@ -123,7 +156,7 @@ export default function CalendarSection() {
                 {/* Número del día anclado bien abajo */}
                 <Text style={[
                   styles.dateNumber,
-                  isVisuallyActive && styles.dateNumberSelected, // 👈 Texto azul/bold si cumple la condición
+                  hasSubscription && styles.dateNumberCharged,
                   isDisabled && styles.dateNumberDisabled,
                 ]}>
                   {dayNumber}
@@ -147,7 +180,7 @@ export default function CalendarSection() {
 
         {selectedDaySubscriptions.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="calendar-clear-outline" size={28} color={colors.warm[200]} />
+            <CalendarBlank weight="bold" size={28} color={colors.warm[200]} />
             <Text style={styles.emptyText}>Día libre de cobros</Text>
           </View>
         ) : (
@@ -159,10 +192,8 @@ export default function CalendarSection() {
               onPress={() => handleOpenModal(sub)}
             >
               <View style={styles.subCardLeft}>
-                <View style={styles.iconCircle}>
-                  <Ionicons name="sparkles" size={18} color={colors.primary[500]} />
-                </View>
-                <View>
+                <ServiceIcon serviceName={sub.icon || sub.name} size={40} />
+                <View style={styles.subCardText}>
                   <Text style={styles.subName}>{sub.name}</Text>
                   <Text style={styles.subTag}>{sub.tag || 'Suscripción'}</Text>
                 </View>
@@ -186,10 +217,10 @@ export default function CalendarSection() {
             {/* Cabecera del Modal */}
             <View style={styles.modalHeader}>
               <View style={styles.modalIconContainer}>
-                <Ionicons name="shield-checkmark" size={24} color={colors.primary[500]} />
+                <ShieldCheck weight="bold" size={24} color={colors.primary[500]} />
               </View>
               <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
-                <Ionicons name="close" size={20} color={colors.warm[500]} />
+                <X weight="bold" size={20} color={colors.warm[500]} />
               </TouchableOpacity>
             </View>
 
@@ -205,7 +236,7 @@ export default function CalendarSection() {
                 </View>
 
                 <View style={styles.infoRow}>
-                  <Ionicons name="calendar-outline" size={16} color={colors.warm[500]} />
+                  <CalendarBlank weight="bold" size={16} color={colors.warm[500]} />
                   <Text style={styles.infoText}>Fecha de cobro: Día {selectedSub.day} de cada mes</Text>
                 </View>
 
@@ -215,7 +246,7 @@ export default function CalendarSection() {
                     style={styles.deleteButton}
                     onPress={() => handleDelete(selectedSub.id)}
                   >
-                    <Ionicons name="trash-outline" size={18} color={colors.red[500]} style={{ marginRight: spacing.sm }} />
+                    <Trash weight="bold" size={18} color={colors.red[500]} style={{ marginRight: spacing.sm }} />
                     <Text style={styles.deleteButtonText}>Eliminar suscripción</Text>
                   </TouchableOpacity>
                 </View>
@@ -232,86 +263,128 @@ export default function CalendarSection() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: spacing['3xl'], // 32, valor original era 28 (sin token exacto)
+    marginTop: spacing['3xl'],
     width: '100%',
-    alignItems: 'center',
     paddingHorizontal: spacing.lg,
   },
 
-  /* --- CONTENEDOR PRINCIPAL DEL CALENDARIO --- */
-  calendarWrapper: {
-    width: 364, // ancho de grilla calculado (7 columnas x 44px + gaps), no es un valor de espaciado
-    alignSelf: 'center',
-    marginLeft: spacing.lg, // 16, valor original era 15
+  /* --- TARJETA DEL CALENDARIO --- */
+  card: {
+    width: '100%',
+    backgroundColor: colors.warm[0],
+    borderWidth: 1,
+    borderColor: colors.warm[150],
+    borderRadius: borderRadius.lg, // 16, coincide con Figma
+    paddingHorizontal: spacing['2xl'], // 24
+    paddingVertical: spacing.lg, // 16
+    ...shadows.lg, // sombra grande y difusa, la más cercana a la del diseño
+  },
+
+  /* --- RESUMEN DEL MES + SELECTOR --- */
+  monthRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  monthSummaryText: {
+    ...typography.bodyMedium,
+    fontWeight: fontWeights.medium,
+  },
+  monthSummaryMuted: {
+    color: semanticColors.text.secondary,
+  },
+  monthSummaryCount: {
+    color: semanticColors.text.primary,
+    fontWeight: fontWeights.semibold,
+  },
+  monthSummaryEmpty: {
+    ...typography.bodyMedium,
+    fontWeight: fontWeights.medium,
+    color: semanticColors.text.secondary,
+  },
+  monthPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.warm[75],
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xxs,
+    borderRadius: borderRadius.full,
+  },
+  monthPillText: {
+    ...typography.badge,
+    color: semanticColors.text.secondary,
+  },
+  monthPillIcon: {
+    marginLeft: spacing.xxs,
   },
 
   /* --- CABECERA DE DÍAS DE LA SEMANA --- */
   weekHeaderRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.sm, // 8, valor original era 7
+    gap: spacing.sm, // 8, aprox al gap de Figma (~9px)
     marginBottom: spacing.sm,
   },
   weekDayCell: {
-    width: 44, // ancho de celda de grilla (ver dayCell)
+    width: 34, // ancho de celda de grilla (ver dayCell)
     alignItems: 'center',
     justifyContent: 'center',
   },
   weekDayText: {
-    ...typography.bodySmall,
-    fontWeight: fontWeights.bold,
-    color: colors.primary[500],
+    ...typography.badge, // 11/14/semibold, coincide exacto con Figma
+    color: semanticColors.text.primary,
   },
 
   /* --- GRILLA DEL CALENDARIO --- */
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.sm, // 8, valor original era 7
+    gap: spacing.sm, // 8, aprox al gap de Figma (~9px)
   },
 
   dayCell: {
-    width: 44, // ancho de celda de grilla
-    height: 52, // alto de celda de grilla
+    width: 34, // ancho exacto de celda en Figma
+    height: 38, // alto exacto de celda en Figma
     position: 'relative',
     alignItems: 'center',
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.warm[0],
+    borderRadius: borderRadius.sm, // 8, más cercano al 7-10px que trae Figma
+  },
+  // Día futuro habilitado, sin cobro, sin seleccionar
+  dayCellFuture: {
+    backgroundColor: colors.warm[50],
+  },
+  // Día actual o seleccionado (sin cobro): sin fondo, solo borde
+  dayCellHighlighted: {
     borderWidth: 1,
     borderColor: colors.warm[150],
   },
-  dayCellSelected: {
-    backgroundColor: colors.primary[100],
-    borderColor: colors.primary[100],
-    borderWidth: 1,
-  },
-  dayCellToday: {
-    borderColor: colors.primary[500],
-    borderWidth: 2,
+  // Día con cobro: siempre gana por sobre cualquier otro estado
+  dayCellCharged: {
+    backgroundColor: colors.primary[500],
   },
 
   /* --- INDICADOR DE SUSCRIPCIÓN --- */
   indicatorStack: {
     flexDirection: 'row',
-    marginTop: spacing.sm, // 8, más cerca del número de abajo
+    marginTop: spacing.xxs, // 2
   },
   indicatorIconWrapper: {
     borderRadius: borderRadius.full,
   },
   indicatorIconOverlap: {
-    marginLeft: -spacing.xs, // 4, para que el segundo ícono se superponga al primero
+    marginLeft: -spacing.xxs,
   },
 
   dateNumber: {
     position: 'absolute',
     bottom: spacing.xs, // 4
-    ...typography.bodyLarge, // 16, valor original era 15
-    fontWeight: fontWeights.medium,
+    ...typography.caption, // 12/16/medium, coincide con Figma para días sin cobro
     color: semanticColors.text.primary,
   },
-  dateNumberSelected: {
-    color: colors.primary[500],
-    fontWeight: fontWeights.bold,
+  dateNumberCharged: {
+    color: semanticColors.text.inverse,
+    fontWeight: fontWeights.semibold,
   },
   dateNumberDisabled: {
     color: colors.warm[300],
@@ -321,7 +394,6 @@ const styles = StyleSheet.create({
   detailsContainer: {
     width: '100%',
     marginTop: spacing['2xl'],
-    paddingHorizontal: spacing.sm,
   },
   detailsHeader: {
     flexDirection: 'row',
@@ -373,17 +445,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  iconCircle: {
-    width: spacing['4xl'], // 40, valor original era 36
-    height: spacing['4xl'],
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.primary[100],
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
+  subCardText: {
+    marginLeft: spacing.md,
   },
   subName: {
-    ...typography.bodyLarge, // 16, valor original era 15
+    ...typography.bodyLarge,
     fontWeight: fontWeights.semibold,
     color: colors.warm[900],
   },
@@ -426,7 +492,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   modalIconContainer: {
-    width: spacing['5xl'], // 48, valor original era 44
+    width: spacing['5xl'], // 48
     height: spacing['5xl'],
     borderRadius: borderRadius.full,
     backgroundColor: colors.primary[100],
@@ -470,7 +536,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   modalSubPrice: {
-    ...typography.h1, // 24/bold, match exacto
+    ...typography.h1, // 24/bold
     color: colors.primary[500],
   },
   infoRow: {

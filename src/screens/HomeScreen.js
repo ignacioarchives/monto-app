@@ -6,12 +6,11 @@ import { StatusBar } from 'expo-status-bar';
 import { colors, semanticColors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 
-// 1. Componente global
-import Header from '../components/Header';
-
-// 2. Componentes exclusivos de Home
-import SummarySection from '../components/home/SummarySection';
+// Componentes de Home
+import HomeTopBar from '../components/home/HomeTopBar';
+import HeroSection from '../components/home/HeroSection';
 import CalendarSection from '../components/home/CalendarSection';
+import NextPaymentSection from '../components/home/NextPaymentSection';
 
 export default function HomeScreen() {
   return (
@@ -23,9 +22,10 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.innerContent}>
-          <Header />
-          <SummarySection />
-          <CalendarSection /> 
+          <HomeTopBar />
+          <HeroSection />
+          <CalendarSection />
+          <NextPaymentSection />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -41,6 +41,6 @@ const styles = StyleSheet.create({
     paddingBottom: spacing['5xl'] * 2 + spacing.xxs, // 100
   },
   innerContent: {
-    marginTop: -spacing['4xl'], // -40
+    marginTop: spacing.xl, // 20, breathing room desde la safe area (antes lo daba el paddingTop de Header)
   },
 });

@@ -1,21 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, semanticColors } from '../theme/colors';
-import { typography } from '../theme/typography';
-import { spacing } from '../theme/spacing';
-import { useSubscriptions } from '../context/SubscriptionContext';
-import { useFontsLoaded } from '../context/FontsContext';
+import { colors, semanticColors } from '../../theme/colors';
+import { typography } from '../../theme/typography';
+import { spacing } from '../../theme/spacing';
+import { useSubscriptions } from '../../context/SubscriptionContext';
+import { useFontsLoaded } from '../../context/FontsContext';
 
 const monthNames = [
   'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
 ];
 
-export default function Header() {
+export default function HeroSection() {
   const { subscriptions } = useSubscriptions();
   const fontsLoaded = useFontsLoaded();
 
-  // Total gastado este mes (misma lógica que usaba SummarySection)
   const totalAmount = subscriptions.reduce((sum, sub) => {
     return sum + (Number(sub.price) || 0);
   }, 0);
@@ -24,7 +23,7 @@ export default function Header() {
 
   if (!fontsLoaded) {
     return (
-      <View style={styles.headerContainer}>
+      <View style={styles.container}>
         <Text style={styles.fallbackAmount}>{formattedTotal}</Text>
         <Text style={styles.fallbackLabel}>Gastados en {currentMonthName}</Text>
       </View>
@@ -32,7 +31,7 @@ export default function Header() {
   }
 
   return (
-    <View style={styles.headerContainer}>
+    <View style={styles.container}>
       <Text style={styles.heroAmount}>{formattedTotal}</Text>
       <Text style={styles.heroLabel}>Gastados en {currentMonthName}</Text>
     </View>
@@ -40,9 +39,9 @@ export default function Header() {
 }
 
 const styles = StyleSheet.create({
-  headerContainer: {
+  container: {
     paddingHorizontal: spacing['2xl'],
-    paddingTop: spacing['5xl'] + spacing.md, // 60
+    marginTop: spacing['2xl'], // 24, separación con HomeTopBar
     marginBottom: spacing.xl,
   },
   heroAmount: {

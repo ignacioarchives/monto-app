@@ -5,6 +5,8 @@
 
 export const fontFamilies = {
   primary: 'Inter',
+  outfitExtraBold: 'Outfit_800ExtraBold',
+  outfitMedium: 'Outfit_500Medium',
 };
 
 export const fontWeights = {
@@ -27,6 +29,16 @@ export const typographyTokens = {
     fontSize: 28,
     lineHeight: 36,
     fontWeight: fontWeights.bold,
+  },
+  'text-display-hero-number': {
+    fontFamily: fontFamilies.outfitExtraBold,
+    fontSize: 50,
+    lineHeight: 54,
+  },
+  'text-display-hero-label': {
+    fontFamily: fontFamilies.outfitMedium,
+    fontSize: 50,
+    lineHeight: 54,
   },
 
   // Headings (Títulos)
@@ -88,6 +100,8 @@ export const typographyTokens = {
 export const typography = {
   displayLarge: typographyTokens['text-display-large'],
   displayMedium: typographyTokens['text-display-medium'],
+  displayHeroNumber: typographyTokens['text-display-hero-number'],
+  displayHeroLabel: typographyTokens['text-display-hero-label'],
   h1: typographyTokens['text-heading-h1'],
   h2: typographyTokens['text-heading-h2'],
   h3: typographyTokens['text-heading-h3'],
