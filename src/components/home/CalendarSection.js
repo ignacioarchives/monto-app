@@ -6,6 +6,7 @@ import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { useSubscriptions } from '../../context/SubscriptionContext';
 import ServiceIcon from '../ServiceIcon';
+import { getCalendarDayInfo } from '../../utils/calendarHelpers';
 
 // Días de la semana para la cabecera de las columnas
 const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
@@ -15,7 +16,10 @@ const monthDays = Array.from({ length: 31 }, (_, index) => index + 1);
 
 export default function CalendarSection() {
   const { subscriptions, deleteSubscription } = useSubscriptions();
-  const [selectedDay, setSelectedDay] = useState(10);
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+  const [selectedDay, setSelectedDay] = useState(today.getDate());
 
   // Estados para controlar el Modal y el item seleccionado
   const [modalVisible, setModalVisible] = useState(false);
@@ -78,22 +82,29 @@ export default function CalendarSection() {
           {monthDays.map((dayNumber) => {
             const isSelected = dayNumber === selectedDay;
 
-            // Buscamos si hay cobros este día para poner el indicador
-            const subsOnThisDay = subscriptions.filter((s) => s.day === dayNumber);
+            // Día real del mes actual vs. inexistente/pasado/hoy/futuro
+            const { exists, status } = getCalendarDayInfo(currentYear, currentMonth, dayNumber, today);
+            const isDisabled = !exists || status === 'past';
+            const isToday = status === 'today';
+
+            // Buscamos si hay cobros este día para poner el indicador (solo en días habilitados)
+            const subsOnThisDay = isDisabled ? [] : subscriptions.filter((s) => s.day === dayNumber);
             const hasSubscription = subsOnThisDay.length > 0;
 
             // NUEVA LÓGICA: El día es visualmente "activo" si lo tocaste o si tiene un cobro
-            const isVisuallyActive = isSelected || hasSubscription;
+            const isVisuallyActive = !isDisabled && (isSelected || hasSubscription);
 
             return (
               <TouchableOpacity
                 key={dayNumber}
                 style={[
                   styles.dayCell,
-                  isVisuallyActive && styles.dayCellSelected // 👈 Se pinta de azul si cumple la condición
+                  isVisuallyActive && styles.dayCellSelected, // 👈 Se pinta de azul si cumple la condición
+                  isToday && styles.dayCellToday,
                 ]}
                 onPress={() => handleDayPress(dayNumber)}
                 activeOpacity={0.7}
+                disabled={isDisabled}
               >
                 {/* Espacio central: Indicador de Suscripción (íconos de las marcas que cobran ese día, hasta 2) */}
                 {hasSubscription && (
@@ -112,7 +123,8 @@ export default function CalendarSection() {
                 {/* Número del día anclado bien abajo */}
                 <Text style={[
                   styles.dateNumber,
-                  isVisuallyActive && styles.dateNumberSelected // 👈 Texto azul/bold si cumple la condición
+                  isVisuallyActive && styles.dateNumberSelected, // 👈 Texto azul/bold si cumple la condición
+                  isDisabled && styles.dateNumberDisabled,
                 ]}>
                   {dayNumber}
                 </Text>
@@ -273,6 +285,10 @@ const styles = StyleSheet.create({
     borderColor: colors.primary[100],
     borderWidth: 1,
   },
+  dayCellToday: {
+    borderColor: colors.primary[500],
+    borderWidth: 2,
+  },
 
   /* --- INDICADOR DE SUSCRIPCIÓN --- */
   indicatorStack: {
@@ -296,6 +312,9 @@ const styles = StyleSheet.create({
   dateNumberSelected: {
     color: colors.primary[500],
     fontWeight: fontWeights.bold,
+  },
+  dateNumberDisabled: {
+    color: colors.warm[300],
   },
 
   /* --- DETALLES DEL DÍA --- */

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -9,9 +9,10 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Animated,
 } from 'react-native';
 import { ArrowLeft, X, MagnifyingGlass } from 'phosphor-react-native';
-import { colors } from '../../theme/colors';
+import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { useAddSubscriptionForm } from '../../hooks/useAddSubscriptionForm';
@@ -22,8 +23,36 @@ import ServiceListItem from './ServiceListItem';
 
 const TAGS = ['Entretenimiento', 'Música', 'Salud', 'Trabajo', 'Tecnología', 'Gaming', 'Otros'];
 
+const AnimatedTabButton = Animated.createAnimatedComponent(TouchableOpacity);
+
 export default function AddSubscriptionModal({ visible, onClose }) {
   const form = useAddSubscriptionForm();
+
+  // Animación de fade del fondo de las solapas (Opción A: color, no posición)
+  const popularAnim = useRef(new Animated.Value(form.activeTab === 'popular' ? 1 : 0)).current;
+  const customAnim = useRef(new Animated.Value(form.activeTab === 'custom' ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(popularAnim, {
+      toValue: form.activeTab === 'popular' ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false, // backgroundColor no soporta el driver nativo
+    }).start();
+    Animated.timing(customAnim, {
+      toValue: form.activeTab === 'custom' ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  }, [form.activeTab]);
+
+  const popularBackground = popularAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.warm[75], colors.primary[500]],
+  });
+  const customBackground = customAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.warm[75], colors.primary[500]],
+  });
 
   const handleCloseModal = () => {
     form.resetForm();
@@ -52,7 +81,7 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                 <Text style={styles.backTitle}>{form.selectedService.name}</Text>
               </TouchableOpacity>
             ) : (
-              <Text style={styles.title}>Agregar Suscripción</Text>
+              <Text style={styles.title}>Añadir Suscripción</Text>
             )}
 
             <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
@@ -63,16 +92,16 @@ export default function AddSubscriptionModal({ visible, onClose }) {
           {/* Solapas sólo si no se ha seleccionado un servicio popular específico */}
           {!form.selectedService && (
             <View style={styles.tabSelector}>
-              <TouchableOpacity
-                style={[styles.tabButton, form.activeTab === 'popular' && styles.activeTabButton]}
+              <AnimatedTabButton
+                style={[styles.tabButton, { backgroundColor: popularBackground }]}
                 onPress={() => form.setActiveTab('popular')}
               >
                 <Text style={[styles.tabText, form.activeTab === 'popular' && styles.activeTabText]}>
                   Populares
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.tabButton, form.activeTab === 'custom' && styles.activeTabButton]}
+              </AnimatedTabButton>
+              <AnimatedTabButton
+                style={[styles.tabButton, { backgroundColor: customBackground }]}
                 onPress={() => {
                   form.setActiveTab('custom');
                   form.setSelectedService(null);
@@ -81,7 +110,7 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                 <Text style={[styles.tabText, form.activeTab === 'custom' && styles.activeTabText]}>
                   Personalizada
                 </Text>
-              </TouchableOpacity>
+              </AnimatedTabButton>
             </View>
           )}
 
@@ -116,75 +145,80 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                 <Text style={styles.saveButtonText}>Guardar Suscripción</Text>
               </TouchableOpacity>
             </ScrollView>
-          ) : form.activeTab === 'popular' ? (
-            /* LISTA DE POPULARES CON BUSCADOR */
-            <View style={styles.popularContainer}>
-              <View style={styles.searchBox}>
-                <MagnifyingGlass weight="bold" size={20} color={colors.warm[400]} style={{ marginRight: spacing.sm }} />
-                <TextInput
-                  style={styles.searchInput}
-                  placeholder="Buscar plataforma..."
-                  placeholderTextColor={colors.warm[400]}
-                  value={form.searchQuery}
-                  onChangeText={form.setSearchQuery}
-                />
-              </View>
-
-              <ScrollView style={{ maxHeight: 280 }} showsVerticalScrollIndicator={false}>
-                {form.filteredPopulars.map((service) => (
-                  <ServiceListItem
-                    key={service.id}
-                    service={service}
-                    onPress={() => form.handleSelectService(service)}
-                  />
-                ))}
-              </ScrollView>
-            </View>
           ) : (
-            /* FORMULARIO PERSONALIZADO (SIN OPCIÓN DE REPETIR) */
-            <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
-              <FormInput
-                label="Nombre de la suscripción"
-                placeholder="Ej. Gimnasio, Club..."
-                value={form.name}
-                onChangeText={form.setName}
-              />
-
-              <FormInput
-                label="Precio ($)"
-                placeholder="Ej. 4500"
-                keyboardType="numeric"
-                value={form.price}
-                onChangeText={form.setPrice}
-              />
-
-              <FormInput
-                label="Día de cobro mensual (Día 1 al 31)"
-                placeholder="Ej. 10"
-                keyboardType="numeric"
-                value={form.day}
-                onChangeText={form.setDay}
-                maxLength={2}
-              />
-
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Categoría (Tag)</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {TAGS.map((tag) => (
-                    <TagBadge
-                      key={tag}
-                      label={tag}
-                      selected={form.selectedTag === tag}
-                      onPress={() => form.setSelectedTag(tag)}
+            /* Alto fijo compartido entre "Populares" y "Personalizada" para que el modal no cambie de tamaño al cambiar de solapa */
+            <View style={styles.tabContent}>
+              {form.activeTab === 'popular' ? (
+                /* LISTA DE POPULARES CON BUSCADOR */
+                <>
+                  <View style={styles.searchBox}>
+                    <MagnifyingGlass weight="bold" size={20} color={colors.warm[400]} style={{ marginRight: spacing.sm }} />
+                    <TextInput
+                      style={styles.searchInput}
+                      placeholder="Buscar plataforma..."
+                      placeholderTextColor={colors.warm[400]}
+                      value={form.searchQuery}
+                      onChangeText={form.setSearchQuery}
                     />
-                  ))}
-                </ScrollView>
-              </View>
+                  </View>
 
-              <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
-                <Text style={styles.saveButtonText}>Guardar Suscripción</Text>
-              </TouchableOpacity>
-            </ScrollView>
+                  <ScrollView style={styles.tabScroll} showsVerticalScrollIndicator={false}>
+                    {form.filteredPopulars.map((service) => (
+                      <ServiceListItem
+                        key={service.id}
+                        service={service}
+                        onPress={() => form.handleSelectService(service)}
+                      />
+                    ))}
+                  </ScrollView>
+                </>
+              ) : (
+                /* FORMULARIO PERSONALIZADO (SIN OPCIÓN DE REPETIR) */
+                <ScrollView style={styles.tabScroll} showsVerticalScrollIndicator={false}>
+                  <FormInput
+                    label="Nombre de la suscripción"
+                    placeholder="Ej. Gimnasio, Club..."
+                    value={form.name}
+                    onChangeText={form.setName}
+                  />
+
+                  <FormInput
+                    label="Precio ($)"
+                    placeholder="Ej. 4500"
+                    keyboardType="numeric"
+                    value={form.price}
+                    onChangeText={form.setPrice}
+                  />
+
+                  <FormInput
+                    label="Día de cobro mensual (Día 1 al 31)"
+                    placeholder="Ej. 10"
+                    keyboardType="numeric"
+                    value={form.day}
+                    onChangeText={form.setDay}
+                    maxLength={2}
+                  />
+
+                  <View style={styles.formGroup}>
+                    <Text style={styles.label}>Categoría (Tag)</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                      {TAGS.map((tag) => (
+                        <TagBadge
+                          key={tag}
+                          label={tag}
+                          selected={form.selectedTag === tag}
+                          onPress={() => form.setSelectedTag(tag)}
+                        />
+                      ))}
+                    </ScrollView>
+                  </View>
+
+                  <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
+                    <Text style={styles.saveButtonText}>Guardar Suscripción</Text>
+                  </TouchableOpacity>
+                </ScrollView>
+              )}
+            </View>
           )}
         </View>
       </KeyboardAvoidingView>
@@ -232,7 +266,12 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   closeButton: {
-    padding: spacing.xs,
+    width: spacing['3xl'], // 32, mismo patrón que el closeButton del modal en CalendarSection.js
+    height: spacing['3xl'],
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.warm[100],
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabSelector: {
     flexDirection: 'row',
@@ -244,12 +283,9 @@ const styles = StyleSheet.create({
   tabButton: {
     flex: 1,
     paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
     alignItems: 'center',
     borderRadius: borderRadius.sm,
-  },
-  activeTabButton: {
-    backgroundColor: colors.warm[0],
-    elevation: 2,
   },
   tabText: {
     ...typography.bodySmall,
@@ -257,11 +293,14 @@ const styles = StyleSheet.create({
     color: colors.warm[500],
   },
   activeTabText: {
-    color: colors.primary[500],
+    color: semanticColors.text.inverse,
     fontWeight: fontWeights.bold,
   },
-  popularContainer: {
-    minHeight: 250,
+  tabContent: {
+    height: 380, // alto fijo compartido entre "Populares" y "Personalizada", no depende de la cantidad de contenido de cada solapa
+  },
+  tabScroll: {
+    flex: 1,
   },
   searchBox: {
     flexDirection: 'row',
