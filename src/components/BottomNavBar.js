@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     height: NAV_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     backgroundColor: colors.warm[0],
     borderWidth: 1,
     borderColor: colors.warm[150],

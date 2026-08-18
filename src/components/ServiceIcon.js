@@ -58,21 +58,22 @@ function hexToTintedBackground(hex, alpha = 0.24) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-export default function ServiceIcon({ serviceName, size = spacing['3xl'], variant = 'square', tinted = false }) {
+export default function ServiceIcon({ serviceName, size = spacing['3xl'], variant = 'square', tinted = false, background }) {
   const icon = SERVICE_ICONS[normalizeServiceName(serviceName)];
   const containerRadius = variant === 'circle' ? borderRadius.full : borderRadius.sm;
 
   if (!icon) {
     const initial = (serviceName || '').trim().charAt(0).toUpperCase() || '?';
     return (
-      <View style={[styles.fallbackContainer, { width: size, height: size }]}>
+      <View style={[styles.fallbackContainer, { width: size, height: size, backgroundColor: background ?? colors.warm[25] }]}>
         <Text style={styles.fallbackInitial}>{initial}</Text>
       </View>
     );
   }
 
   const iconSize = size * 0.5625; // misma proporción usada en los íconos de SummarySection (18/32)
-  const backgroundColor = tinted ? hexToTintedBackground(icon.hex) : colors.warm[25];
+  // `background` fuerza un color puntual (ej. blanco), si no se pasa se usa la lógica de siempre
+  const backgroundColor = background ?? (tinted ? hexToTintedBackground(icon.hex) : colors.warm[25]);
 
   return (
     <View style={[styles.iconContainer, { width: size, height: size, borderRadius: containerRadius, backgroundColor }]}>

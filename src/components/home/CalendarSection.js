@@ -145,7 +145,7 @@ export default function CalendarSection() {
                             key={sub.id}
                             style={[styles.indicatorIconWrapper, index > 0 && styles.indicatorIconOverlap]}
                           >
-                            <ServiceIcon serviceName={sub.icon || sub.name} size={12} variant="circle" tinted />
+                            <ServiceIcon serviceName={sub.icon || sub.name} size={16} variant="circle" background={colors.warm[0]} />
                           </View>
                         ))}
                       </View>
