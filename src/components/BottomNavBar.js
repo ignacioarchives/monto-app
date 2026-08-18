@@ -5,6 +5,7 @@ import { House, Cardholder, ChartPieSlice } from 'phosphor-react-native';
 import { colors, semanticColors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing, borderRadius } from '../theme/spacing';
+import { shadows } from '../theme/shadows';
 
 const NAV_ITEMS = [
   { id: 'Home', label: 'Home', Icon: House },
@@ -28,16 +29,16 @@ export default function BottomNavBar({ state, navigation }) {
           return (
             <TouchableOpacity
               key={item.id}
-              style={[styles.navItem, isActive ? styles.navItemActive : styles.navItemInactive]}
+              style={[styles.navItem, isActive && styles.navItemActive]}
               onPress={() => navigation.navigate(item.id)}
               activeOpacity={0.7}
             >
               <IconComponent
                 weight={isActive ? 'fill' : 'bold'}
                 size={24}
-                color={semanticColors.text.inverse}
+                color={isActive ? colors.primary[500] : colors.warm[700]}
               />
-              <Text style={styles.label}>{item.label}</Text>
+              <Text style={[styles.label, isActive && styles.labelActive]}>{item.label}</Text>
             </TouchableOpacity>
           );
         })}
@@ -69,28 +70,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: semanticColors.background.pillActive,
-    borderRadius: borderRadius.full,
+    backgroundColor: colors.warm[0],
+    borderWidth: 1,
+    borderColor: colors.warm[150],
+    borderRadius: borderRadius.xl, // 24, exacto a Figma (ya no es un pill 100% redondo)
     paddingHorizontal: spacing.lg,
     marginRight: spacing.sm,
+    ...shadows.sm, // coincide exacto con la sombra del Figma (0,1,3, opacity 0.06)
   },
   navItem: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.full,
-  },
-  navItemInactive: {
-    opacity: 0.6,
+    borderRadius: 20, // exacto a Figma, sin token que coincida
   },
   navItemActive: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.primary[100],
   },
   label: {
     ...typography.badge,
     marginTop: spacing.xxs,
-    color: semanticColors.text.inverse,
+    color: colors.warm[700],
+  },
+  labelActive: {
+    color: colors.primary[500],
   },
   addButton: {
     width: NAV_HEIGHT,

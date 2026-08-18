@@ -43,17 +43,6 @@ export default function CalendarSection() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedSub, setSelectedSub] = useState(null);
 
-  // Filtramos qué suscripciones caen en el día seleccionado
-  const selectedDaySubscriptions = subscriptions.filter(
-    (sub) => sub.day === selectedDay
-  );
-
-  // Función para abrir el modal con la suscripción tocada
-  const handleOpenModal = (sub) => {
-    setSelectedSub(sub);
-    setModalVisible(true);
-  };
-
   // Manejador al tocar un día del calendario
   const handleDayPress = (dayNumber) => {
     setSelectedDay(dayNumber);
@@ -183,44 +172,7 @@ export default function CalendarSection() {
         </View>
       </View>
 
-      {/* ===== DETALLE DEL DÍA SELECCIONADO ===== */}
-      <View style={styles.detailsContainer}>
-        <View style={styles.detailsHeader}>
-          <Text style={styles.detailsTitle}>Cobros del día {selectedDay}</Text>
-          {selectedDaySubscriptions.length > 0 && (
-            <Text style={styles.countBadge}>
-              {selectedDaySubscriptions.length}
-            </Text>
-          )}
-        </View>
-
-        {selectedDaySubscriptions.length === 0 ? (
-          <View style={styles.emptyState}>
-            <CalendarBlank weight="bold" size={28} color={colors.warm[200]} />
-            <Text style={styles.emptyText}>Día libre de cobros</Text>
-          </View>
-        ) : (
-          selectedDaySubscriptions.map((sub) => (
-            <TouchableOpacity
-              key={sub.id}
-              style={styles.subCard}
-              activeOpacity={0.8}
-              onPress={() => handleOpenModal(sub)}
-            >
-              <View style={styles.subCardLeft}>
-                <ServiceIcon serviceName={sub.icon || sub.name} size={40} />
-                <View style={styles.subCardText}>
-                  <Text style={styles.subName}>{sub.name}</Text>
-                  <Text style={styles.subTag}>{sub.tag || 'Suscripción'}</Text>
-                </View>
-              </View>
-              <Text style={styles.subPrice}>${sub.price}</Text>
-            </TouchableOpacity>
-          ))
-        )}
-      </View>
-
-      {/* ===== MODAL / POPUP DE DETALLE ===== */}
+      {/* ===== MODAL / POPUP DE DETALLE (se abre al tocar un día con cobro) ===== */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -413,81 +365,6 @@ const styles = StyleSheet.create({
   },
   dateNumberDisabled: {
     color: colors.warm[300],
-  },
-
-  /* --- DETALLES DEL DÍA --- */
-  detailsContainer: {
-    width: '100%',
-    marginTop: spacing['2xl'],
-    paddingHorizontal: spacing['2xl'], // 24, mismo margen de pantalla que el resto (antes lo daba `container`)
-  },
-  detailsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-  },
-  detailsTitle: {
-    ...typography.bodyLarge,
-    fontWeight: fontWeights.bold,
-    color: colors.warm[900],
-  },
-  countBadge: {
-    backgroundColor: colors.primary[100],
-    color: colors.primary[500],
-    ...typography.caption,
-    fontWeight: fontWeights.bold,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xxs,
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-  },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing['2xl'],
-    backgroundColor: colors.warm[50],
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.warm[100],
-  },
-  emptyText: {
-    marginTop: spacing.sm,
-    ...typography.bodyMedium,
-    color: colors.warm[400],
-  },
-  subCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.warm[0],
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.warm[100],
-  },
-  subCardLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  subCardText: {
-    marginLeft: spacing.md,
-  },
-  subName: {
-    ...typography.bodyLarge,
-    fontWeight: fontWeights.semibold,
-    color: colors.warm[900],
-  },
-  subTag: {
-    ...typography.caption,
-    color: colors.warm[500],
-    marginTop: spacing.xxs,
-  },
-  subPrice: {
-    ...typography.bodyLarge,
-    fontWeight: fontWeights.bold,
-    color: colors.warm[900],
   },
 
   /* --- ESTILOS DEL MODAL --- */

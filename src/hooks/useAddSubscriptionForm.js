@@ -18,7 +18,7 @@ const POPULAR_SERVICES = [
   },
   {
     id: 'p2',
-    name: 'YouTube Premium',
+    name: 'YouTube',
     icon: 'youtube',
     category: 'Entretenimiento',
     plans: [
@@ -40,7 +40,7 @@ const POPULAR_SERVICES = [
   },
   {
     id: 'p4',
-    name: 'PlayStation Plus',
+    name: 'PlayStation',
     icon: 'playstation',
     category: 'Gaming',
     plans: [
@@ -51,7 +51,7 @@ const POPULAR_SERVICES = [
   },
   {
     id: 'p5',
-    name: 'HBO Max',
+    name: 'HBO',
     icon: 'hbomax',
     category: 'Entretenimiento',
     plans: [
@@ -62,7 +62,7 @@ const POPULAR_SERVICES = [
   },
   {
     id: 'p6',
-    name: 'Apple TV+',
+    name: 'Apple TV',
     icon: 'appletv',
     category: 'Entretenimiento',
     plans: [
@@ -135,9 +135,9 @@ export function useAddSubscriptionForm() {
   const handleSave = () => {
     if (!name || !price || !day) return false;
 
-    const finalName = selectedService && selectedPlan
-      ? `${selectedService.name} (${selectedPlan.name})`
-      : name;
+    // Solo el nombre de marca del servicio (sin el plan elegido) — el plan
+    // sigue determinando el precio, pero ya no se concatena al nombre.
+    const finalName = selectedService ? selectedService.name : name;
 
     const newSub = {
       id: Date.now().toString(),
