@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: spacing['2xl'],
     marginTop: spacing['2xl'], // 24, separación con HomeTopBar
-    marginBottom: spacing.xl,
   },
   heroAmount: {
     ...typography.displayHeroNumber,

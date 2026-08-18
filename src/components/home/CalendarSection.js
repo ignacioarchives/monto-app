@@ -263,7 +263,7 @@ export default function CalendarSection() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: spacing['3xl'],
+    marginTop: spacing.md, // 12, lo más cerca de 14px que hay en el design system
     width: '100%',
     paddingHorizontal: spacing.lg,
   },
@@ -345,9 +345,10 @@ const styles = StyleSheet.create({
 
   dayCell: {
     width: 34, // ancho exacto de celda en Figma
-    height: 38, // alto exacto de celda en Figma
+    height: 45, // 38 (Figma) + 7px para que los días queden un poco más largos
     position: 'relative',
     alignItems: 'center',
+    justifyContent: 'center', // centra verticalmente el ícono de suscripción
     borderRadius: borderRadius.sm, // 8, más cercano al 7-10px que trae Figma
   },
   // Día futuro habilitado, sin cobro, sin seleccionar
@@ -367,7 +368,7 @@ const styles = StyleSheet.create({
   /* --- INDICADOR DE SUSCRIPCIÓN --- */
   indicatorStack: {
     flexDirection: 'row',
-    marginTop: spacing.xxs, // 2
+    marginTop: -13, // sube el ícono respecto del centro de la celda
   },
   indicatorIconWrapper: {
     borderRadius: borderRadius.full,
