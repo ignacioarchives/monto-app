@@ -21,7 +21,7 @@ import TagBadge from '../ui/TagBadge';
 import PlanCard from '../ui/PlanCard';
 import ServiceListItem from './ServiceListItem';
 
-const TAGS = ['Entretenimiento', 'Música', 'Salud', 'Trabajo', 'Tecnología', 'Gaming', 'Otros'];
+export const TAGS = ['Entretenimiento', 'Música', 'Salud', 'Trabajo', 'Tecnología', 'Gaming', 'Otros'];
 
 const AnimatedTabButton = Animated.createAnimatedComponent(TouchableOpacity);
 
