@@ -13,18 +13,22 @@ export default function NextChargeHero({ nextCharge }) {
   if (!nextCharge) {
     return (
       <View style={styles.container}>
-        <Text style={styles.emptyText}>No hay cobros este mes</Text>
+        <Text style={styles.emptyText}>No tenés ningún cobro este mes</Text>
       </View>
     );
   }
 
-  const dateLabel = `${nextCharge.getDate()} de ${monthNames[nextCharge.getMonth()]}`;
+  const dayNumber = nextCharge.getDate();
+  const monthLabel = monthNames[nextCharge.getMonth()];
 
   return (
     <View style={styles.container}>
       <Text style={styles.heroText}>
         <Text style={styles.heroLead}>Tu próximo cobro es el </Text>
-        <Text style={styles.heroDate}>{dateLabel}</Text>
+        <Text style={styles.heroArrow}>{'→'}</Text>
+        {'\n'}
+        <Text style={styles.heroDateNumber}>{dayNumber}</Text>
+        <Text style={styles.heroLead}>{` de ${monthLabel}`}</Text>
       </Text>
     </View>
   );
@@ -42,12 +46,16 @@ const styles = StyleSheet.create({
     ...typography.displayHeroLabel,
     color: semanticColors.text.primary,
   },
-  heroDate: {
-    ...typography.displayHeroNumber,
+  heroArrow: {
+    ...typography.displayHeroLabel,
+    color: colors.primary[500],
+  },
+  heroDateNumber: {
+    ...typography.displayHeroLabel,
     color: colors.primary[500],
   },
   emptyText: {
-    ...typography.h2,
-    color: semanticColors.text.secondary,
+    ...typography.displayHeroLabel,
+    color: semanticColors.text.primary,
   },
 });
