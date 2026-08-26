@@ -5,17 +5,25 @@ import { colors, semanticColors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 
-export default function HomeTopBar() {
+export default function HomeTopBar({ title, showConfigButton = true }) {
   return (
     <View style={styles.container}>
       <Text style={styles.greeting}>
-        <Text style={styles.greetingMuted}>Buen dia, </Text>
-        <Text style={styles.greetingName}>Ignacio.</Text>
+        {title ? (
+          <Text style={styles.greetingName}>{title}</Text>
+        ) : (
+          <>
+            <Text style={styles.greetingMuted}>Buen dia, </Text>
+            <Text style={styles.greetingName}>Ignacio.</Text>
+          </>
+        )}
       </Text>
 
-      <TouchableOpacity style={styles.configButton} activeOpacity={0.7}>
-        <Gear weight="bold" size={20} color={colors.warm[700]} />
-      </TouchableOpacity>
+      {showConfigButton && (
+        <TouchableOpacity style={styles.configButton} activeOpacity={0.7}>
+          <Gear weight="bold" size={20} color={colors.warm[700]} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

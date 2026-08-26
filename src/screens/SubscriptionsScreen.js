@@ -7,7 +7,7 @@ import { semanticColors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { useSubscriptionsScreen } from '../hooks/useSubscriptionsScreen';
 
-import SubscriptionsHeader from '../components/subscriptions/SubscriptionsHeader';
+import HomeTopBar from '../components/home/HomeTopBar';
 import NextChargeHero from '../components/subscriptions/NextChargeHero';
 import SubscriptionsList from '../components/subscriptions/SubscriptionsList';
 
@@ -23,7 +23,7 @@ export default function SubscriptionsScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.innerContent}>
-          <SubscriptionsHeader />
+          <HomeTopBar title="Mis Suscripciones" showConfigButton={false} />
           <NextChargeHero nextCharge={nextCharge} />
           <SubscriptionsList
             tags={tags}
