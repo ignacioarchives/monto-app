@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { CaretLeft, CaretRight } from 'phosphor-react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
-import { spacing, borderRadius } from '../../theme/spacing';
+import { spacing } from '../../theme/spacing';
 
 export default function MonthSelector({ monthLabel, canGoPrev, canGoNext, onPrev, onNext, style }) {
   return (
@@ -56,9 +56,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   arrowButton: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.full,
+    width: 33, // exacto a Figma, sin token que coincida
+    height: 30, // exacto a Figma, sin token que coincida
+    borderRadius: 10, // exacto a Figma, sin token que coincida
     backgroundColor: colors.primary[100],
     alignItems: 'center',
     justifyContent: 'center',

@@ -70,7 +70,9 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: spacing['5xl'] * 2 + spacing.xxs },
   innerContent: { marginTop: spacing.xl },
   monthSelectorSpacing: { marginTop: spacing['2xl'] },
-  donutSpacing: { marginTop: spacing['2xl'] },
+  // 65px exacto pedido para el espacio entre el selector de mes y el donut chart —
+  // no coincide con ningún token de spacing.js
+  donutSpacing: { marginTop: 65 },
   legend: {
     flexDirection: 'row',
     paddingHorizontal: spacing['2xl'],
