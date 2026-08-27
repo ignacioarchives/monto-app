@@ -10,6 +10,7 @@ const POPULAR_SERVICES = [
     name: 'Netflix',
     icon: 'netflix',
     category: 'Entretenimiento',
+    defaultCategory: 'streaming',
     plans: [
       { id: 'n1', name: 'Estándar c/anuncios', price: '2499' },
       { id: 'n2', name: 'Estándar', price: '4199' },
@@ -21,6 +22,7 @@ const POPULAR_SERVICES = [
     name: 'YouTube',
     icon: 'youtube',
     category: 'Entretenimiento',
+    defaultCategory: 'streaming',
     plans: [
       { id: 'y1', name: 'Estudiante', price: '1090' },
       { id: 'y2', name: 'Individual', price: '1890' },
@@ -32,6 +34,7 @@ const POPULAR_SERVICES = [
     name: 'Spotify',
     icon: 'spotify',
     category: 'Música',
+    defaultCategory: 'musica',
     plans: [
       { id: 's1', name: 'Estudiante', price: '1290' },
       { id: 's2', name: 'Individual', price: '2490' },
@@ -43,6 +46,7 @@ const POPULAR_SERVICES = [
     name: 'PlayStation',
     icon: 'playstation',
     category: 'Gaming',
+    defaultCategory: 'servicios',
     plans: [
       { id: 'ps1', name: 'Essential', price: '6999' },
       { id: 'ps2', name: 'Extra', price: '10499' },
@@ -54,6 +58,7 @@ const POPULAR_SERVICES = [
     name: 'HBO',
     icon: 'hbomax',
     category: 'Entretenimiento',
+    defaultCategory: 'streaming',
     plans: [
       { id: 'h1', name: 'Básico con anuncios', price: '2190' },
       { id: 'h2', name: 'Estándar', price: '3290' },
@@ -65,6 +70,7 @@ const POPULAR_SERVICES = [
     name: 'Apple TV',
     icon: 'appletv',
     category: 'Entretenimiento',
+    defaultCategory: 'streaming',
     plans: [
       { id: 'ap1', name: 'Individual', price: '3500' },
       { id: 'ap2', name: 'Apple One', price: '7900' },
@@ -75,6 +81,7 @@ const POPULAR_SERVICES = [
     name: 'Claude',
     icon: 'claude',
     category: 'Tecnología',
+    defaultCategory: 'servicios',
     plans: [
       { id: 'cl1', name: 'Pro', price: '15000' },
       { id: 'cl2', name: 'Max', price: '35000' },
@@ -85,6 +92,7 @@ const POPULAR_SERVICES = [
     name: 'Uber',
     icon: 'uber',
     category: 'Otros',
+    defaultCategory: 'servicios',
     plans: [
       { id: 'ub1', name: 'Mensual', price: '4990' },
     ],
@@ -102,12 +110,14 @@ export function useAddSubscriptionForm() {
   const [price, setPrice] = useState('');
   const [day, setDay] = useState('');
   const [selectedTag, setSelectedTag] = useState('Entretenimiento');
+  const [selectedCategory, setSelectedCategory] = useState('streaming');
 
   // Al hacer clic en un servicio popular (ej: Netflix)
   const handleSelectService = (service) => {
     setSelectedService(service);
     setName(service.name);
     setSelectedTag(service.category);
+    setSelectedCategory(service.defaultCategory);
     if (service.plans && service.plans.length > 0) {
       setSelectedPlan(service.plans[0]);
       setPrice(service.plans[0].price);
@@ -125,6 +135,7 @@ export function useAddSubscriptionForm() {
     setPrice('');
     setDay('');
     setSelectedTag('Entretenimiento');
+    setSelectedCategory('streaming');
     setSearchQuery('');
     setSelectedService(null);
     setSelectedPlan(null);
@@ -146,6 +157,7 @@ export function useAddSubscriptionForm() {
       price: parseFloat(price),
       day: parseInt(day),
       tag: selectedTag,
+      category: selectedCategory,
       createdAt: new Date().toISOString(),
     };
 
@@ -175,6 +187,8 @@ export function useAddSubscriptionForm() {
     setDay,
     selectedTag,
     setSelectedTag,
+    selectedCategory,
+    setSelectedCategory,
     handleSelectService,
     handleSelectPlan,
     handleSave,

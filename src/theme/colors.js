@@ -120,6 +120,16 @@ export const colors = {
     700: warmScale['warm-700'],
     900: warmScale['warm-900'],
   },
+  category: {
+    streaming: '#B482F3',
+    servicios: '#616BCD',
+    musica: '#FEAB77',
+    educacion: '#FF96C3',
+    alquiler: '#E0CF48',
+    salud: '#E224B8',
+    hogar: '#59BC23',
+    finanzas: '#397BB1',
+  },
 };
 
 // Tokens Semánticos (Uso directo según intención)

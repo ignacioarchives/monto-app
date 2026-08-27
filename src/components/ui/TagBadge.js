@@ -4,9 +4,16 @@ import { colors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 
-export default function TagBadge({ label, selected, onPress }) {
+export default function TagBadge({ label, selected, onPress, activeColor }) {
   return (
-    <TouchableOpacity style={[styles.tagBadge, selected && styles.activeTagBadge]} onPress={onPress}>
+    <TouchableOpacity
+      style={[
+        styles.tagBadge,
+        selected && styles.activeTagBadge,
+        selected && activeColor && { backgroundColor: activeColor },
+      ]}
+      onPress={onPress}
+    >
       <Text style={[styles.tagText, selected && styles.activeTagText]}>{label}</Text>
     </TouchableOpacity>
   );

@@ -110,6 +110,24 @@ Tres niveles de acceso, en este orden de preferencia para usar en componentes:
 ⚠️ Nota de naming: los estados semánticos se llaman **`green` / `orange` / `red`** en el código
 (no `success` / `warning` / `error`). Usar estos nombres exactos al pedirle cambios a Claude Code.
 
+**Categorías (color por categoría de gasto)** — `colors.category`
+| Categoría | Hex | Key (`colors.category.X`) |
+|---|---|---|
+| Streaming | `#B482F3` | `streaming` |
+| Servicios | `#616BCD` | `servicios` |
+| Música | `#FEAB77` | `musica` |
+| Educación | `#FF96C3` | `educacion` |
+| Alquiler | `#E0CF48` | `alquiler` |
+| Salud | `#E224B8` | `salud` |
+| Hogar | `#59BC23` | `hogar` |
+| Finanzas | `#397BB1` | `finanzas` |
+
+A diferencia de `primary` y los estados semánticos, cada categoría es un único valor plano (no
+escala 100/500/700) — se usa tal cual como color de fondo/ícono para identificar la categoría de
+una suscripción (ej. chip de categoría, ícono de fondo en `ServiceListItem`). El label visible en
+la UI puede llevar tilde ("Música", "Educación"); la key del objeto en código va sin tilde por
+convención de identificadores JS.
+
 ### Escala de neutros cálidos — `colors.warm[...]`
 
 Agregada para resolver falta de jerarquía visual entre bloques (fondo/tarjeta/elemento anidado)
@@ -240,6 +258,7 @@ mismo patrón visual que los íconos de Phosphor en las tarjetas de `SummarySect
 ## Estado actual del proyecto
 - ✅ UX y flujos diseñados en Figma (incluye pantalla de añadir suscripción)
 - ✅ Design tokens completos: colores, tipografía, espaciado, radios y escala de neutros cálidos (`colors.warm`)
+- ✅ Colores de categoría (`colors.category`) agregados: streaming, servicios, música, educación, alquiler, salud, hogar, finanzas
 - ✅ Estructura de carpetas y navegación base configurada
 - ✅ `BottomNavBar` y `SummarySection` (ambas tarjetas) migradas al design system, con íconos Phosphor
 - ✅ Librería de íconos de marca (`Simple Icons` + `ServiceIcon`) instalada e integrada en la lista de servicios populares

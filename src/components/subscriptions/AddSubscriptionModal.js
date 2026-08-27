@@ -16,6 +16,7 @@ import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { useAddSubscriptionForm } from '../../hooks/useAddSubscriptionForm';
+import { REPORT_CATEGORIES } from '../../data/categories';
 import FormInput from '../ui/FormInput';
 import TagBadge from '../ui/TagBadge';
 import PlanCard from '../ui/PlanCard';
@@ -200,7 +201,7 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                   />
 
                   <View style={styles.formGroup}>
-                    <Text style={styles.label}>Categoría (Tag)</Text>
+                    <Text style={styles.label}>Tag</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       {TAGS.map((tag) => (
                         <TagBadge
@@ -208,6 +209,21 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                           label={tag}
                           selected={form.selectedTag === tag}
                           onPress={() => form.setSelectedTag(tag)}
+                        />
+                      ))}
+                    </ScrollView>
+                  </View>
+
+                  <View style={styles.formGroup}>
+                    <Text style={styles.label}>Categoría</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                      {REPORT_CATEGORIES.map(({ key, label, color }) => (
+                        <TagBadge
+                          key={key}
+                          label={label}
+                          selected={form.selectedCategory === key}
+                          onPress={() => form.setSelectedCategory(key)}
+                          activeColor={color}
                         />
                       ))}
                     </ScrollView>
