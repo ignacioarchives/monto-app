@@ -64,7 +64,7 @@ export function useReportsScreen() {
         label,
         color,
         amount: report.categoryTotals[key] || 0,
-      })).filter((item) => item.amount > 0),
+      })),
     [report]
   );
 

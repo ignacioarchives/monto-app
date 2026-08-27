@@ -5,9 +5,9 @@ import { colors, semanticColors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 
-export default function MonthSelector({ monthLabel, canGoPrev, canGoNext, onPrev, onNext }) {
+export default function MonthSelector({ monthLabel, canGoPrev, canGoNext, onPrev, onNext, style }) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Text style={styles.label}>
         <Text style={styles.labelMuted}>Mes de </Text>
         <Text style={styles.labelStrong}>{monthLabel}</Text>

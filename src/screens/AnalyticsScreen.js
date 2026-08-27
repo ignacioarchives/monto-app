@@ -33,6 +33,7 @@ export default function AnalyticsScreen() {
           <HomeTopBar title="Informe Mensual" showConfigButton={false} />
 
           <MonthSelector
+            style={styles.monthSelectorSpacing}
             monthLabel={monthLabel}
             canGoPrev={canGoPrev}
             canGoNext={canGoNext}
@@ -40,9 +41,13 @@ export default function AnalyticsScreen() {
             onNext={goToNextMonth}
           />
 
-          <CategoryDonutChart data={categoryBreakdown} centerLabel={totalLabel} />
+          <CategoryDonutChart
+            style={styles.donutSpacing}
+            data={categoryBreakdown}
+            centerLabel={totalLabel}
+          />
 
-          <View style={styles.legend}>
+          <View style={[styles.legend, styles.legendSpacing]}>
             <View style={styles.legendColumn}>
               {leftColumn.map((item) => (
                 <CategoryLegendItem key={item.key} color={item.color} label={item.label} amount={item.amount} />
@@ -63,12 +68,17 @@ export default function AnalyticsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: semanticColors.background.screen },
   scrollContent: { paddingBottom: spacing['5xl'] * 2 + spacing.xxs },
-  innerContent: { marginTop: spacing.xl, gap: spacing['2xl'] },
+  innerContent: { marginTop: spacing.xl },
+  monthSelectorSpacing: { marginTop: spacing['2xl'] },
+  donutSpacing: { marginTop: spacing['2xl'] },
   legend: {
     flexDirection: 'row',
     paddingHorizontal: spacing['2xl'],
     gap: spacing.xl,
   },
+  // 50px exacto pedido para el espacio entre el donut chart y la lista de categorías —
+  // no coincide con ningún token de spacing.js
+  legendSpacing: { marginTop: 50 },
   legendColumn: {
     flex: 1,
     gap: spacing.lg,

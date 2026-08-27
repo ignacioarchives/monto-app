@@ -13,7 +13,7 @@ const GAP_DEGREES = 8;
 // Donut de gasto por categoría: un <Circle> por categoría usando strokeDasharray/strokeDashoffset
 // sobre el mismo radio, con strokeLinecap="round" para las puntas redondeadas del diseño y un
 // gap fijo entre segmentos. El <G> se rota -90° para que el primer segmento arranque arriba.
-export default function CategoryDonutChart({ data, centerLabel }) {
+export default function CategoryDonutChart({ data, centerLabel, style }) {
   const total = data.reduce((sum, item) => sum + item.amount, 0);
   const gapLength = (GAP_DEGREES / 360) * CIRCUMFERENCE;
   const availableLength = Math.max(CIRCUMFERENCE - data.length * gapLength, 0);
@@ -21,7 +21,7 @@ export default function CategoryDonutChart({ data, centerLabel }) {
   let cumulative = 0;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
         <G rotation="-90" origin={`${SIZE / 2}, ${SIZE / 2}`}>
           {total > 0 &&
