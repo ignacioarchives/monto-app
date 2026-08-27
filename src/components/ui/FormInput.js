@@ -37,8 +37,10 @@ const styles = StyleSheet.create({
     borderColor: colors.warm[150],
     borderRadius: borderRadius.md,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    ...typography.bodyLarge,
+    height: spacing['5xl'], // alto fijo: evita que Android "salte" al recalcular la métrica de fuente al tipear
+    textAlignVertical: 'center', // no-op en iOS, centra el texto en Android dentro del alto fijo
+    includeFontPadding: false, // Android: saca el padding extra de fuente que causa el salto de tamaño
+    ...typography.bodyMedium,
     color: colors.warm[900],
   },
 });

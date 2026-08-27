@@ -136,9 +136,9 @@ export default function AddSubscriptionModal({ visible, onClose }) {
               <FormInput
                 label="Día de cobro / Cuándo empieza (Día 1 al 31)"
                 placeholder="Ej. 15"
-                keyboardType="numeric"
+                keyboardType="number-pad"
                 value={form.day}
-                onChangeText={form.setDay}
+                onChangeText={form.handleDayChange}
                 maxLength={2}
               />
 
@@ -185,18 +185,18 @@ export default function AddSubscriptionModal({ visible, onClose }) {
 
                   <FormInput
                     label="Precio ($)"
-                    placeholder="Ej. 4500"
-                    keyboardType="numeric"
+                    placeholder="Ej. 4.500"
+                    keyboardType="number-pad"
                     value={form.price}
-                    onChangeText={form.setPrice}
+                    onChangeText={form.handlePriceChange}
                   />
 
                   <FormInput
                     label="Día de cobro mensual (Día 1 al 31)"
                     placeholder="Ej. 10"
-                    keyboardType="numeric"
+                    keyboardType="number-pad"
                     value={form.day}
-                    onChangeText={form.setDay}
+                    onChangeText={form.handleDayChange}
                     maxLength={2}
                   />
 
