@@ -1,17 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useSubscriptions } from '../context/SubscriptionContext';
-import { TAGS } from '../components/subscriptions/AddSubscriptionModal';
 
 export function useSubscriptionsScreen() {
   const { subscriptions, calculateNextBillingDate } = useSubscriptions();
-  const [selectedTag, setSelectedTag] = useState('Todas');
 
-  const tags = useMemo(() => ['Todas', ...TAGS], []);
-
-  const filteredSubscriptions = useMemo(() => {
-    if (selectedTag === 'Todas') return subscriptions;
-    return subscriptions.filter((sub) => sub.tag === selectedTag);
-  }, [subscriptions, selectedTag]);
+  // Ordenadas por precio, de mayor a menor (criterio fijo por ahora: "Precio (Mas alto)")
+  const sortedSubscriptions = useMemo(() => {
+    return [...subscriptions].sort((a, b) => Number(b.price) - Number(a.price));
+  }, [subscriptions]);
 
   const nextCharge = useMemo(() => {
     if (subscriptions.length === 0) return null;
@@ -24,10 +20,7 @@ export function useSubscriptionsScreen() {
   }, [subscriptions, calculateNextBillingDate]);
 
   return {
-    tags,
-    selectedTag,
-    setSelectedTag,
-    filteredSubscriptions,
+    sortedSubscriptions,
     nextCharge,
   };
 }

@@ -12,7 +12,7 @@ import NextChargeHero from '../components/subscriptions/NextChargeHero';
 import SubscriptionsList from '../components/subscriptions/SubscriptionsList';
 
 export default function SubscriptionsScreen() {
-  const { tags, selectedTag, setSelectedTag, filteredSubscriptions, nextCharge } = useSubscriptionsScreen();
+  const { sortedSubscriptions, nextCharge } = useSubscriptionsScreen();
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -25,12 +25,7 @@ export default function SubscriptionsScreen() {
         <View style={styles.innerContent}>
           <HomeTopBar title="Mis Suscripciones" showConfigButton={false} />
           <NextChargeHero nextCharge={nextCharge} />
-          <SubscriptionsList
-            tags={tags}
-            selectedTag={selectedTag}
-            onSelectTag={setSelectedTag}
-            filteredSubscriptions={filteredSubscriptions}
-          />
+          <SubscriptionsList subscriptions={sortedSubscriptions} />
         </View>
       </ScrollView>
     </SafeAreaView>
