@@ -5,11 +5,7 @@ import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import { useFontsLoaded } from '../context/FontsContext';
-
-const monthNames = [
-  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
-];
+import { MONTH_NAMES } from '../data/months';
 
 export default function Header() {
   const { subscriptions } = useSubscriptions();
@@ -20,7 +16,7 @@ export default function Header() {
     return sum + (Number(sub.price) || 0);
   }, 0);
   const formattedTotal = `$${totalAmount.toLocaleString('es-AR')}`;
-  const currentMonthName = monthNames[new Date().getMonth()];
+  const currentMonthName = MONTH_NAMES[new Date().getMonth()];
 
   if (!fontsLoaded) {
     return (

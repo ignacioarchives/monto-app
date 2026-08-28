@@ -42,6 +42,13 @@ const SERVICE_ICONS = {
   },
 };
 
+// Color de marca de un servicio (ej. para resaltar su nombre en otras pantallas).
+// Devuelve un gris neutro si el servicio no está en el set curado.
+export function getServiceColor(serviceName) {
+  const icon = SERVICE_ICONS[normalizeServiceName(serviceName)];
+  return icon ? `#${icon.hex}` : colors.warm[900];
+}
+
 function normalizeServiceName(name) {
   return (name || '')
     .toLowerCase()

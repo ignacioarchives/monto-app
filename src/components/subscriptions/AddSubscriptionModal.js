@@ -11,22 +11,40 @@ import {
   Platform,
   Animated,
 } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { ArrowLeft, X, MagnifyingGlass, PlusCircle } from 'phosphor-react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { useAddSubscriptionForm } from '../../hooks/useAddSubscriptionForm';
 import { REPORT_CATEGORIES } from '../../data/categories';
+import { MONTH_NAMES } from '../../data/months';
 import FormInput from '../ui/FormInput';
 import TagBadge from '../ui/TagBadge';
 import PlanCard from '../ui/PlanCard';
 import ServiceListItem from './ServiceListItem';
+import { getServiceColor } from '../ServiceIcon';
 
 const AnimatedTabButton = Animated.createAnimatedComponent(TouchableOpacity);
+
+// Ícono "calendar-day" exportado desde Figma (asset real, no dibujado a mano)
+function CalendarDayIcon({ size = 24, color = colors.warm[400] }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        fill={color}
+        d="M7.675 2C8.14444 2 8.525 2.38376 8.525 2.85714V3.71429H14.475V2.85714C14.475 2.38376 14.8556 2 15.325 2C15.7944 2 16.175 2.38376 16.175 2.85714V3.73545C18.3227 3.95047 20 5.77771 20 8V15.7143C20 18.0812 18.0972 20 15.75 20H7.25C4.90279 20 3 18.0812 3 15.7143V8C3 5.77771 4.67734 3.95047 6.825 3.73545V2.85714C6.825 2.38376 7.20556 2 7.675 2ZM4.8451 7.14286H18.1549C17.8048 6.14412 16.8603 5.42857 15.75 5.42857H7.25C6.13971 5.42857 5.19516 6.14412 4.8451 7.14286ZM18.3 8.85714H4.7V15.7143C4.7 17.1344 5.84167 18.2857 7.25 18.2857H15.75C17.1583 18.2857 18.3 17.1344 18.3 15.7143V8.85714ZM6.4 11.4286C6.4 10.9552 6.78056 10.5714 7.25 10.5714H10.65C11.1194 10.5714 11.5 10.9552 11.5 11.4286V14.8571C11.5 15.3305 11.1194 15.7143 10.65 15.7143H7.25C6.78056 15.7143 6.4 15.3305 6.4 14.8571V11.4286ZM9.8 12.2857H8.1V14H9.8V12.2857Z"
+      />
+    </Svg>
+  );
+}
 
 export default function AddSubscriptionModal({ visible, onClose }) {
   const form = useAddSubscriptionForm();
   const [attemptedSave, setAttemptedSave] = useState(false);
+  const currentMonthName = MONTH_NAMES[new Date().getMonth()];
 
   // Animación de fade del fondo de las solapas (Opción A: color, no posición)
   const popularAnim = useRef(new Animated.Value(form.activeTab === 'popular' ? 1 : 0)).current;
@@ -97,44 +115,48 @@ export default function AddSubscriptionModal({ visible, onClose }) {
             </TouchableOpacity>
           </View>
 
-          {/* Siempre montado con el mismo tamaño (aunque no se vea) para que el modal
-              mida igual elijas o no un servicio popular específico */}
-          <View
-            style={[styles.tabSelector, form.selectedService && styles.tabSelectorHidden]}
-            pointerEvents={form.selectedService ? 'none' : 'auto'}
-          >
-            <AnimatedTabButton
-              style={[styles.tabButton, { backgroundColor: popularBackground }]}
-              onPress={() => form.setActiveTab('popular')}
-            >
-              <Text style={[styles.tabText, form.activeTab === 'popular' && styles.activeTabText]}>
-                Populares
-              </Text>
-            </AnimatedTabButton>
-            <AnimatedTabButton
-              style={[styles.tabButton, { backgroundColor: customBackground }]}
-              onPress={() => {
-                form.setActiveTab('custom');
-                form.setSelectedService(null);
-              }}
-            >
-              <Text style={[styles.tabText, form.activeTab === 'custom' && styles.activeTabText]}>
-                Personalizada
-              </Text>
-            </AnimatedTabButton>
-          </View>
+          {/* Solapas sólo si no se ha seleccionado un servicio popular específico */}
+          {!form.selectedService && (
+            <View style={styles.tabSelector}>
+              <AnimatedTabButton
+                style={[styles.tabButton, { backgroundColor: popularBackground }]}
+                onPress={() => form.setActiveTab('popular')}
+              >
+                <Text style={[styles.tabText, form.activeTab === 'popular' && styles.activeTabText]}>
+                  Populares
+                </Text>
+              </AnimatedTabButton>
+              <AnimatedTabButton
+                style={[styles.tabButton, { backgroundColor: customBackground }]}
+                onPress={() => {
+                  form.setActiveTab('custom');
+                  form.setSelectedService(null);
+                }}
+              >
+                <Text style={[styles.tabText, form.activeTab === 'custom' && styles.activeTabText]}>
+                  Personalizada
+                </Text>
+              </AnimatedTabButton>
+            </View>
+          )}
 
           {/* OPCIÓN 1: VISTA DE SERVICIO POPULAR SELECCIONADO (CON SUS 3 CARDS DE PLANES) */}
           {form.selectedService ? (
-            <View style={styles.tabContent}>
+            // Altura mayor que tabContent: compensa el espacio que ocupaba el selector de
+            // solapas (que acá no se muestra), para que el modal mida igual en las dos vistas.
+            <View style={styles.tabContentSelected}>
               <ScrollView style={styles.tabScroll} showsVerticalScrollIndicator={false}>
-                <Text style={styles.sectionLabel}>Seleccioná tu plan</Text>
+                <Text style={styles.sectionLabel}>
+                  Planes de <Text style={styles.sectionLabelBold}>{form.selectedService.name}</Text>
+                </Text>
 
-                {/* Contenedor de las 3 Cards de Planes */}
+                {/* Contenedor de las cards de planes */}
                 <View style={styles.plansContainer}>
                   {form.selectedService.plans.map((plan) => (
                     <PlanCard
                       key={plan.id}
+                      brandName={form.selectedService.name}
+                      brandColor={getServiceColor(form.selectedService.icon)}
                       name={plan.name}
                       price={plan.price}
                       selected={form.selectedPlan?.id === plan.id}
@@ -144,13 +166,15 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                 </View>
 
                 <FormInput
-                  label="Día de cobro / Cuándo empieza (Día 1 al 31)"
-                  placeholder="Ej. 15"
+                  label="Empieza"
+                  placeholder={`Ej. 29 de ${currentMonthName}`}
                   keyboardType="number-pad"
                   value={form.day}
                   onChangeText={form.handleDayChange}
                   maxLength={2}
                   error={attemptedSave && !form.day}
+                  icon={<CalendarDayIcon size={20} color={colors.warm[400]} />}
+                  suffix={form.day ? `de ${currentMonthName}` : null}
                 />
 
                 <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
@@ -207,12 +231,13 @@ export default function AddSubscriptionModal({ visible, onClose }) {
 
                   <FormInput
                     label="Día de cobro mensual (Día 1 al 31)"
-                    placeholder="Ej. 10"
+                    placeholder={`Ej. 29 de ${currentMonthName}`}
                     keyboardType="number-pad"
                     value={form.day}
                     onChangeText={form.handleDayChange}
                     maxLength={2}
                     error={attemptedSave && !form.day}
+                    suffix={form.day ? `de ${currentMonthName}` : null}
                   />
 
                   <View style={styles.formGroup}>
@@ -281,7 +306,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: spacing['2xl'],
   },
   title: {
     ...typography.h3,
@@ -321,9 +346,6 @@ const styles = StyleSheet.create({
     padding: spacing.xs,
     marginBottom: spacing.lg,
   },
-  tabSelectorHidden: {
-    opacity: 0,
-  },
   tabButton: {
     flex: 1,
     paddingVertical: spacing.sm,
@@ -342,6 +364,11 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     height: 380, // alto fijo compartido entre "Populares" y "Personalizada", no depende de la cantidad de contenido de cada solapa
+  },
+  tabContentSelected: {
+    // 380 + el alto que ocupaba el selector de solapas (~42) + su marginBottom (16),
+    // que en esta vista no se renderiza, para que el modal mida igual en total.
+    height: 380 + 58,
   },
   tabScroll: {
     flex: 1,
@@ -364,13 +391,17 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     ...typography.bodyMedium,
-    fontWeight: fontWeights.semibold,
-    color: colors.warm[700],
+    color: colors.warm[400],
     marginBottom: spacing.md,
+  },
+  sectionLabelBold: {
+    fontWeight: fontWeights.bold,
+    color: colors.text.darkAlt,
   },
   plansContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 10,
     marginBottom: spacing.xl,
   },
   formGroup: {
