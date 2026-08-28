@@ -7,14 +7,12 @@ const SUBSCRIPTIONS_STORAGE_KEY = '@monto/subscriptions';
 const MONTHLY_HISTORY_STORAGE_KEY = '@monto/monthlyHistory';
 
 const CATEGORY_KEYS = [
-  'streaming',
   'servicios',
-  'musica',
-  'educacion',
-  'alquiler',
-  'salud',
   'hogar',
+  'salud',
+  'alquiler',
   'finanzas',
+  'educacion',
 ];
 
 // Clave de mes en formato "YYYY-MM", usada para indexar monthlyHistory

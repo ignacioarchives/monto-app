@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -11,7 +11,7 @@ import {
   Platform,
   Animated,
 } from 'react-native';
-import { ArrowLeft, X, MagnifyingGlass } from 'phosphor-react-native';
+import { ArrowLeft, X, MagnifyingGlass, PlusCircle } from 'phosphor-react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
@@ -22,12 +22,11 @@ import TagBadge from '../ui/TagBadge';
 import PlanCard from '../ui/PlanCard';
 import ServiceListItem from './ServiceListItem';
 
-export const TAGS = ['Entretenimiento', 'Música', 'Salud', 'Trabajo', 'Tecnología', 'Gaming', 'Otros'];
-
 const AnimatedTabButton = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function AddSubscriptionModal({ visible, onClose }) {
   const form = useAddSubscriptionForm();
+  const [attemptedSave, setAttemptedSave] = useState(false);
 
   // Animación de fade del fondo de las solapas (Opción A: color, no posición)
   const popularAnim = useRef(new Animated.Value(form.activeTab === 'popular' ? 1 : 0)).current;
@@ -57,11 +56,17 @@ export default function AddSubscriptionModal({ visible, onClose }) {
 
   const handleCloseModal = () => {
     form.resetForm();
+    setAttemptedSave(false);
     onClose();
   };
 
   const handleSavePress = () => {
-    if (form.handleSave()) onClose();
+    if (form.handleSave()) {
+      setAttemptedSave(false);
+      onClose();
+    } else {
+      setAttemptedSave(true);
+    }
   };
 
   return (
@@ -140,10 +145,11 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                 value={form.day}
                 onChangeText={form.handleDayChange}
                 maxLength={2}
+                error={attemptedSave && !form.day}
               />
 
               <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
-                <Text style={styles.saveButtonText}>Guardar Suscripción</Text>
+                <Text style={styles.saveButtonText}>Añadir Suscripción</Text>
               </TouchableOpacity>
             </ScrollView>
           ) : (
@@ -181,6 +187,7 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                     placeholder="Ej. Gimnasio, Club..."
                     value={form.name}
                     onChangeText={form.setName}
+                    error={attemptedSave && !form.name}
                   />
 
                   <FormInput
@@ -189,6 +196,7 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                     keyboardType="number-pad"
                     value={form.price}
                     onChangeText={form.handlePriceChange}
+                    error={attemptedSave && !form.price}
                   />
 
                   <FormInput
@@ -198,26 +206,13 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                     value={form.day}
                     onChangeText={form.handleDayChange}
                     maxLength={2}
+                    error={attemptedSave && !form.day}
                   />
 
                   <View style={styles.formGroup}>
-                    <Text style={styles.label}>Tag</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                      {TAGS.map((tag) => (
-                        <TagBadge
-                          key={tag}
-                          label={tag}
-                          selected={form.selectedTag === tag}
-                          onPress={() => form.setSelectedTag(tag)}
-                        />
-                      ))}
-                    </ScrollView>
-                  </View>
-
-                  <View style={styles.formGroup}>
                     <Text style={styles.label}>Categoría</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                      {REPORT_CATEGORIES.map(({ key, label, color }) => (
+                    <View style={styles.categoryRow}>
+                      {REPORT_CATEGORIES.slice(0, 4).map(({ key, label, color }) => (
                         <TagBadge
                           key={key}
                           label={label}
@@ -226,11 +221,27 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                           activeColor={color}
                         />
                       ))}
-                    </ScrollView>
+                    </View>
+                    <View style={styles.categoryRow}>
+                      {REPORT_CATEGORIES.slice(4).map(({ key, label, color }) => (
+                        <TagBadge
+                          key={key}
+                          label={label}
+                          selected={form.selectedCategory === key}
+                          onPress={() => form.setSelectedCategory(key)}
+                          activeColor={color}
+                        />
+                      ))}
+                      <TagBadge
+                        label="Añadir"
+                        icon={<PlusCircle weight="bold" size={16} color={colors.warm[500]} style={{ marginRight: spacing.xs }} />}
+                        onPress={() => {}}
+                      />
+                    </View>
                   </View>
 
                   <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
-                    <Text style={styles.saveButtonText}>Guardar Suscripción</Text>
+                    <Text style={styles.saveButtonText}>Añadir Suscripción</Text>
                   </TouchableOpacity>
                 </ScrollView>
               )}
@@ -354,11 +365,17 @@ const styles = StyleSheet.create({
     color: colors.warm[700],
     marginBottom: spacing.sm,
   },
+  categoryRow: {
+    flexDirection: 'row',
+  },
   saveButton: {
     backgroundColor: colors.primary[500],
-    borderRadius: borderRadius.md,
-    paddingVertical: spacing.lg,
+    borderRadius: 15,
+    width: 344,
+    height: 52,
     alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
     marginTop: spacing.md,
   },
   saveButtonText: {
