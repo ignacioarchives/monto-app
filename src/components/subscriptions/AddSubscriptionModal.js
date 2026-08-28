@@ -95,63 +95,67 @@ export default function AddSubscriptionModal({ visible, onClose }) {
             </TouchableOpacity>
           </View>
 
-          {/* Solapas sólo si no se ha seleccionado un servicio popular específico */}
-          {!form.selectedService && (
-            <View style={styles.tabSelector}>
-              <AnimatedTabButton
-                style={[styles.tabButton, { backgroundColor: popularBackground }]}
-                onPress={() => form.setActiveTab('popular')}
-              >
-                <Text style={[styles.tabText, form.activeTab === 'popular' && styles.activeTabText]}>
-                  Populares
-                </Text>
-              </AnimatedTabButton>
-              <AnimatedTabButton
-                style={[styles.tabButton, { backgroundColor: customBackground }]}
-                onPress={() => {
-                  form.setActiveTab('custom');
-                  form.setSelectedService(null);
-                }}
-              >
-                <Text style={[styles.tabText, form.activeTab === 'custom' && styles.activeTabText]}>
-                  Personalizada
-                </Text>
-              </AnimatedTabButton>
-            </View>
-          )}
+          {/* Siempre montado con el mismo tamaño (aunque no se vea) para que el modal
+              mida igual elijas o no un servicio popular específico */}
+          <View
+            style={[styles.tabSelector, form.selectedService && styles.tabSelectorHidden]}
+            pointerEvents={form.selectedService ? 'none' : 'auto'}
+          >
+            <AnimatedTabButton
+              style={[styles.tabButton, { backgroundColor: popularBackground }]}
+              onPress={() => form.setActiveTab('popular')}
+            >
+              <Text style={[styles.tabText, form.activeTab === 'popular' && styles.activeTabText]}>
+                Populares
+              </Text>
+            </AnimatedTabButton>
+            <AnimatedTabButton
+              style={[styles.tabButton, { backgroundColor: customBackground }]}
+              onPress={() => {
+                form.setActiveTab('custom');
+                form.setSelectedService(null);
+              }}
+            >
+              <Text style={[styles.tabText, form.activeTab === 'custom' && styles.activeTabText]}>
+                Personalizada
+              </Text>
+            </AnimatedTabButton>
+          </View>
 
           {/* OPCIÓN 1: VISTA DE SERVICIO POPULAR SELECCIONADO (CON SUS 3 CARDS DE PLANES) */}
           {form.selectedService ? (
-            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420 }}>
-              <Text style={styles.sectionLabel}>Seleccioná tu plan</Text>
+            <View style={styles.tabContent}>
+              <ScrollView style={styles.tabScroll} showsVerticalScrollIndicator={false}>
+                <Text style={styles.sectionLabel}>Seleccioná tu plan</Text>
 
-              {/* Contenedor de las 3 Cards de Planes */}
-              <View style={styles.plansContainer}>
-                {form.selectedService.plans.map((plan) => (
-                  <PlanCard
-                    key={plan.id}
-                    name={plan.name}
-                    price={plan.price}
-                    selected={form.selectedPlan?.id === plan.id}
-                    onPress={() => form.handleSelectPlan(plan)}
-                  />
-                ))}
-              </View>
+                {/* Contenedor de las 3 Cards de Planes */}
+                <View style={styles.plansContainer}>
+                  {form.selectedService.plans.map((plan) => (
+                    <PlanCard
+                      key={plan.id}
+                      name={plan.name}
+                      price={plan.price}
+                      selected={form.selectedPlan?.id === plan.id}
+                      onPress={() => form.handleSelectPlan(plan)}
+                    />
+                  ))}
+                </View>
 
-              <FormInput
-                label="Día de cobro / Cuándo empieza (Día 1 al 31)"
-                placeholder="Ej. 15"
-                keyboardType="number-pad"
-                value={form.day}
-                onChangeText={form.handleDayChange}
-                maxLength={2}
-                error={attemptedSave && !form.day}
-              />
+                <FormInput
+                  label="Día de cobro / Cuándo empieza (Día 1 al 31)"
+                  placeholder="Ej. 15"
+                  keyboardType="number-pad"
+                  value={form.day}
+                  onChangeText={form.handleDayChange}
+                  maxLength={2}
+                  error={attemptedSave && !form.day}
+                />
 
-              <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
-                <Text style={styles.saveButtonText}>Añadir Suscripción</Text>
-              </TouchableOpacity>
-            </ScrollView>
+                <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
+                  <Text style={styles.saveButtonText}>Añadir Suscripción</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
           ) : (
             /* Alto fijo compartido entre "Populares" y "Personalizada" para que el modal no cambie de tamaño al cambiar de solapa */
             <View style={styles.tabContent}>
@@ -306,6 +310,9 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     padding: spacing.xs,
     marginBottom: spacing.lg,
+  },
+  tabSelectorHidden: {
+    opacity: 0,
   },
   tabButton: {
     flex: 1,
