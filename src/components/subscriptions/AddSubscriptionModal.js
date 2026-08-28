@@ -83,8 +83,10 @@ export default function AddSubscriptionModal({ visible, onClose }) {
                 style={styles.backButton}
                 onPress={() => form.setSelectedService(null)}
               >
-                <ArrowLeft weight="bold" size={22} color={colors.warm[900]} />
-                <Text style={styles.backTitle}>{form.selectedService.name}</Text>
+                <View style={styles.backIconCircle}>
+                  <ArrowLeft weight="bold" size={20} color={colors.warm[400]} />
+                </View>
+                <Text style={styles.backTitle}>Volver</Text>
               </TouchableOpacity>
             ) : (
               <Text style={styles.title}>Añadir Suscripción</Text>
@@ -290,10 +292,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  backIconCircle: {
+    width: spacing['3xl'],
+    height: spacing['3xl'],
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.warm[50],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   backTitle: {
     ...typography.h3,
     fontWeight: fontWeights.bold,
-    color: colors.warm[900],
+    color: colors.warm[400],
     marginLeft: spacing.sm,
   },
   closeButton: {
