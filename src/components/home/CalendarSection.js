@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
-import { X } from 'phosphor-react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { useSubscriptions } from '../../context/SubscriptionContext';
 import ServiceIcon from '../ServiceIcon';
 import SubscriptionCard from '../subscriptions/SubscriptionCard';
+import NestedCardModal from '../ui/NestedCardModal';
 import { getCalendarDayInfo } from '../../utils/calendarHelpers';
 
 // Días de la semana para la cabecera de las columnas (sin tildes, igual que el Figma)
@@ -169,35 +169,17 @@ export default function CalendarSection() {
       </View>
 
       {/* ===== MODAL / POPUP DE COBROS DEL DÍA (se abre al tocar un día con cobro) ===== */}
-      <Modal
-        animationType="fade"
-        transparent={true}
+      <NestedCardModal
         visible={modalVisible}
-        onRequestClose={handleCloseModal}
+        onClose={handleCloseModal}
+        title={modalDay ? `Cobros ${modalDay} de ${monthNames[currentMonth]}` : undefined}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-
-            {/* Cabecera oscura con el día tocado */}
-            <View style={styles.modalHeaderBar}>
-              <Text style={styles.modalHeaderTitle}>
-                Cobros {modalDay} de {monthNames[currentMonth]}
-              </Text>
-              <TouchableOpacity onPress={handleCloseModal} style={styles.modalCloseButton}>
-                <X weight="bold" size={16} color={colors.warm[0]} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Contenedor blanco con una card por cada suscripción que cobra ese día */}
-            <View style={styles.modalBody}>
-              {daySubs.map((sub) => (
-                <SubscriptionCard key={sub.id} subscription={sub} />
-              ))}
-            </View>
-
-          </View>
+        <View style={styles.modalCardsList}>
+          {daySubs.map((sub) => (
+            <SubscriptionCard key={sub.id} subscription={sub} />
+          ))}
         </View>
-      </Modal>
+      </NestedCardModal>
 
     </View>
   );
@@ -338,50 +320,8 @@ const styles = StyleSheet.create({
     color: colors.warm[300],
   },
 
-  /* --- ESTILOS DEL MODAL --- */
-  modalOverlay: {
-    flex: 1,
-    // rgba equivalente a colors.warm[900] al 60% de opacidad (no hay helper hex->rgba en el theme)
-    backgroundColor: 'rgba(28, 25, 23, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  modalCard: {
-    width: '100%',
-    maxWidth: 340,
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden', // recorta la barra oscura y el cuerpo blanco al radio del modal
-    shadowColor: colors.warm[900],
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 10,
-  },
-  modalHeaderBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: colors.warm[900],
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.lg,
-  },
-  modalHeaderTitle: {
-    ...typography.h3,
-    fontWeight: fontWeights.bold,
-    color: colors.warm[0],
-  },
-  modalCloseButton: {
-    width: 28,
-    height: 28,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalBody: {
-    backgroundColor: colors.warm[0],
-    padding: spacing.xl,
+  /* --- CONTENIDO DEL MODAL (NestedCardModal se encarga del wrapper/card/header) --- */
+  modalCardsList: {
     gap: spacing.md,
   },
 });
