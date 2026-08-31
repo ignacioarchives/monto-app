@@ -6,14 +6,16 @@ import { spacing, borderRadius } from '../../theme/spacing';
 
 // `icon` (opcional) reemplaza al punto de color — se usa para el chip especial "Añadir".
 export default function TagBadge({ label, selected, onPress, activeColor, icon }) {
+  const dotColor = selected ? colors.primary[300] : activeColor;
+
   return (
     <TouchableOpacity
-      style={[styles.tagBadge, selected && activeColor && { borderColor: activeColor }]}
+      style={[styles.tagBadge, selected && styles.tagBadgeSelected]}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      {icon ? icon : <View style={[styles.dot, { backgroundColor: activeColor }]} />}
-      <Text style={styles.tagText}>{label}</Text>
+      {icon ? icon : <View style={[styles.dot, { backgroundColor: dotColor }]} />}
+      <Text style={[styles.tagText, selected && styles.tagTextSelected]}>{label}</Text>
     </TouchableOpacity>
   );
 }
@@ -37,8 +39,14 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
     marginRight: spacing.xs,
   },
+  tagBadgeSelected: {
+    borderColor: colors.primary[300],
+  },
   tagText: {
     ...typography.caption,
     color: colors.warm[700],
+  },
+  tagTextSelected: {
+    color: colors.primary[300],
   },
 });

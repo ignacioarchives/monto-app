@@ -15,7 +15,7 @@ export default function FormInput({ label, value, onChangeText, placeholder, key
   if (error) {
     borderColor = colors.red[500]; // incompleto / con error
   } else if (hasValue) {
-    borderColor = colors.primary[500]; // activo (ya se escribió algo)
+    borderColor = colors.primary[300]; // activo (ya se escribió algo)
   }
 
   return (

@@ -99,6 +99,18 @@ const POPULAR_SERVICES = [
   },
 ];
 
+const MAX_CUSTOM_PRICE = 2000000;
+
+// Igual criterio que sanitizeDayDigits: si el próximo dígito haría superar el máximo
+// permitido para una suscripción personalizada, lo ignora y mantiene el valor anterior.
+function sanitizePriceDigits(rawValue, previousDigits) {
+  const digitsOnly = rawValue.replace(/\D/g, '');
+  if (!digitsOnly) return '';
+  const numeric = parseInt(digitsOnly, 10);
+  if (numeric > MAX_CUSTOM_PRICE) return previousDigits;
+  return digitsOnly;
+}
+
 // Formatea dígitos con puntos como separador de miles (ej. "15000" -> "15.000")
 // y descarta cualquier caracter que no sea número — así una coma u otro símbolo
 // que se cuele no rompe el parseo al guardar.
@@ -148,9 +160,13 @@ export function useAddSubscriptionForm() {
     setPrice(formatPriceDigits(plan.price));
   };
 
-  // onChangeText del campo de precio: sanitiza y formatea en cada tecleo
+  // onChangeText del campo de precio: sanitiza (con tope de MAX_CUSTOM_PRICE) y formatea en cada tecleo
   const handlePriceChange = (text) => {
-    setPrice(formatPriceDigits(text));
+    setPrice((previousFormatted) => {
+      const previousDigits = previousFormatted.replace(/\D/g, '');
+      const sanitizedDigits = sanitizePriceDigits(text, previousDigits);
+      return formatPriceDigits(sanitizedDigits);
+    });
   };
 
   // onChangeText de los campos de día: solo dígitos, y solo valores entre 1 y 31

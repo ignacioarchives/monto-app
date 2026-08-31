@@ -1,6 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
-import { CheckCircle } from 'phosphor-react-native';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { colors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -24,11 +23,6 @@ export default function PlanCard({ brandName, brandColor, name, price, selected,
         <Text style={styles.priceAmount}>${formattedPrice}</Text>
         <Text style={styles.priceUnit}> /m</Text>
       </Text>
-      {selected && (
-        <View style={styles.checkBadge}>
-          <CheckCircle weight="bold" size={16} color={colors.primary[500]} />
-        </View>
-      )}
     </TouchableOpacity>
   );
 }
@@ -43,10 +37,9 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: spacing.sm,
     justifyContent: 'center',
-    position: 'relative',
   },
   planCardSelected: {
-    borderColor: colors.primary[500],
+    borderColor: colors.primary[300],
   },
   planTitle: {
     ...typography.bodyLarge,
@@ -55,6 +48,7 @@ const styles = StyleSheet.create({
     fontWeight: fontWeights.bold,
   },
   planName: {
+    fontWeight: fontWeights.semibold,
     color: colors.text.darkAlt,
   },
   planPrice: {
@@ -62,15 +56,11 @@ const styles = StyleSheet.create({
   },
   priceAmount: {
     ...typography.bodyLarge,
+    fontWeight: fontWeights.semibold,
     color: colors.text.darkAlt,
   },
   priceUnit: {
     ...typography.caption,
     color: colors.warm[400],
-  },
-  checkBadge: {
-    position: 'absolute',
-    top: spacing.xs,
-    right: spacing.xs,
   },
 });
