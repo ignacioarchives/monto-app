@@ -18,7 +18,6 @@ import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { useAddSubscriptionForm } from '../../hooks/useAddSubscriptionForm';
 import { REPORT_CATEGORIES } from '../../data/categories';
-import { MONTH_NAMES } from '../../data/months';
 import FormInput from '../ui/FormInput';
 import TagBadge from '../ui/TagBadge';
 import PlanCard from '../ui/PlanCard';
@@ -44,7 +43,6 @@ function CalendarDayIcon({ size = 24, color = colors.warm[400] }) {
 export default function AddSubscriptionModal({ visible, onClose }) {
   const form = useAddSubscriptionForm();
   const [attemptedSave, setAttemptedSave] = useState(false);
-  const currentMonthName = MONTH_NAMES[new Date().getMonth()];
 
   // Animación de fade del fondo de las solapas (Opción A: color, no posición)
   const popularAnim = useRef(new Animated.Value(form.activeTab === 'popular' ? 1 : 0)).current;
@@ -167,14 +165,13 @@ export default function AddSubscriptionModal({ visible, onClose }) {
 
                 <FormInput
                   label="Empieza"
-                  placeholder={`Ej. 29 de ${currentMonthName}`}
+                  placeholder="Empieza hoy mismo"
                   keyboardType="number-pad"
                   value={form.day}
                   onChangeText={form.handleDayChange}
                   maxLength={2}
                   error={attemptedSave && !form.day}
                   icon={<CalendarDayIcon size={20} color={colors.warm[400]} />}
-                  suffix={form.day ? `de ${currentMonthName}` : null}
                 />
 
                 <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
@@ -231,13 +228,13 @@ export default function AddSubscriptionModal({ visible, onClose }) {
 
                   <FormInput
                     label="Día de cobro mensual (Día 1 al 31)"
-                    placeholder={`Ej. 29 de ${currentMonthName}`}
+                    placeholder="Empieza hoy mismo"
                     keyboardType="number-pad"
                     value={form.day}
                     onChangeText={form.handleDayChange}
                     maxLength={2}
                     error={attemptedSave && !form.day}
-                    suffix={form.day ? `de ${currentMonthName}` : null}
+                    icon={<CalendarDayIcon size={20} color={colors.warm[400]} />}
                   />
 
                   <View style={styles.formGroup}>
