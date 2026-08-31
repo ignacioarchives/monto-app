@@ -1,22 +1,46 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { DotsThreeVertical } from 'phosphor-react-native';
+import React, { useRef, useState } from 'react';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FunnelSimple } from 'phosphor-react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
+import { SORT_OPTIONS } from '../../hooks/useSubscriptionsScreen';
 import SubscriptionCard from './SubscriptionCard';
+import SortMenu from './SortMenu';
 
-export default function SubscriptionsList({ subscriptions }) {
+export default function SubscriptionsList({ subscriptions, sortOption, onChangeSortOption }) {
+  const menuButtonRef = useRef(null);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState(null);
+
+  const sortLabel = SORT_OPTIONS.find((option) => option.key === sortOption)?.label ?? '';
+
+  const openMenu = () => {
+    menuButtonRef.current?.measure((x, y, width, height, pageX, pageY) => {
+      const screenWidth = Dimensions.get('window').width;
+      setMenuAnchor({
+        top: pageY + height + spacing.xs,
+        right: screenWidth - (pageX + width),
+      });
+      setMenuVisible(true);
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.sortRow}>
         <Text style={styles.sortText}>
           <Text style={styles.sortLabel}>Ordenar por: </Text>
-          <Text style={styles.sortValue}>Precio (Mas alto)</Text>
+          <Text style={styles.sortValue}>{sortLabel}</Text>
         </Text>
 
-        <TouchableOpacity style={styles.menuButton} activeOpacity={0.7}>
-          <DotsThreeVertical weight="bold" size={20} color={colors.warm[700]} />
+        <TouchableOpacity
+          ref={menuButtonRef}
+          style={styles.menuButton}
+          activeOpacity={0.7}
+          onPress={openMenu}
+        >
+          <FunnelSimple weight="bold" size={20} color={colors.warm[700]} />
         </TouchableOpacity>
       </View>
 
@@ -29,6 +53,14 @@ export default function SubscriptionsList({ subscriptions }) {
           ))
         )}
       </View>
+
+      <SortMenu
+        visible={menuVisible}
+        anchor={menuAnchor}
+        selectedOption={sortOption}
+        onSelect={onChangeSortOption}
+        onClose={() => setMenuVisible(false)}
+      />
     </View>
   );
 }

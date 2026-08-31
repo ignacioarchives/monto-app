@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
-import { CaretDown, CalendarBlank, ShieldCheck, X, Trash } from 'phosphor-react-native';
+import { CalendarBlank, ShieldCheck, X, Trash } from 'phosphor-react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
@@ -89,10 +89,9 @@ export default function CalendarSection() {
             </Text>
           )}
 
-          <TouchableOpacity style={styles.monthPill} activeOpacity={0.7}>
+          <View style={styles.monthPill}>
             <Text style={styles.monthPillText}>{currentMonthLabel}</Text>
-            <CaretDown weight="bold" size={10} color={semanticColors.text.secondary} style={styles.monthPillIcon} />
-          </TouchableOpacity>
+          </View>
         </View>
 
         {/* 2. CABECERA DE LOS DÍAS DE LA SEMANA */}
@@ -276,11 +275,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
   },
   monthPillText: {
-    ...typography.badge,
+    ...typography.caption, // 12/16, un paso más grande que el badge anterior (11/14)
     color: semanticColors.text.secondary,
-  },
-  monthPillIcon: {
-    marginLeft: spacing.xxs,
   },
 
   /* --- CABECERA DE DÍAS DE LA SEMANA --- */

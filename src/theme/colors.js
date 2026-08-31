@@ -49,6 +49,7 @@ export const colorTokens = {
 export const warmScale = {
   'warm-0': '#FFFFFF',   // Máxima elevación: modales, popups sobre tarjetas
   'warm-25': '#FDFCFB',  // Superficie elevada, un paso por encima de la tarjeta
+  'warm-35': '#FAF9F6',  // Paso intermedio entre 25 y 50, ej. feedback de touch sutil
   'warm-50': '#FBFAF8',  // Fondo de tarjeta estándar
   'warm-75': '#F7F5F1',  // Elemento anidado dentro de una tarjeta (ej. fila de lista)
   'warm-100': '#F2F1ED', // Fondo de pantalla
@@ -109,6 +110,7 @@ export const colors = {
   warm: {
     0: warmScale['warm-0'],
     25: warmScale['warm-25'],
+    35: warmScale['warm-35'],
     50: warmScale['warm-50'],
     75: warmScale['warm-75'],
     100: warmScale['warm-100'],
