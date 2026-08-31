@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
-import { CalendarBlank, ShieldCheck, X, Trash } from 'phosphor-react-native';
+import { X } from 'phosphor-react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { useSubscriptions } from '../../context/SubscriptionContext';
 import ServiceIcon from '../ServiceIcon';
+import SubscriptionCard from '../subscriptions/SubscriptionCard';
 import { getCalendarDayInfo } from '../../utils/calendarHelpers';
 
 // Días de la semana para la cabecera de las columnas (sin tildes, igual que el Figma)
@@ -28,7 +29,7 @@ const monthNames = [
 ];
 
 export default function CalendarSection() {
-  const { subscriptions, deleteSubscription } = useSubscriptions();
+  const { subscriptions } = useSubscriptions();
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth();
@@ -39,9 +40,11 @@ export default function CalendarSection() {
   const currentMonthLabel =
     monthNames[currentMonth][0].toUpperCase() + monthNames[currentMonth].slice(1);
 
-  // Estados para controlar el Modal y el item seleccionado
+  // Estados para controlar el Modal: solo guardamos el día tocado, las subs de
+  // ese día se derivan en cada render (así el modal ya refleja cambios en vivo)
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedSub, setSelectedSub] = useState(null);
+  const [modalDay, setModalDay] = useState(null);
+  const daySubs = modalDay ? subscriptions.filter((s) => s.day === modalDay) : [];
 
   // Manejador al tocar un día del calendario
   const handleDayPress = (dayNumber) => {
@@ -50,9 +53,9 @@ export default function CalendarSection() {
     // Buscamos si hay suscripciones en este día específico
     const subsOnThisDay = subscriptions.filter((s) => s.day === dayNumber);
 
-    // Si hay cobros en este día, abrimos automáticamente el modal con el primero de ellos
+    // Si hay cobros en este día, abrimos el modal con todas las que cobran ese día
     if (subsOnThisDay.length > 0) {
-      setSelectedSub(subsOnThisDay[0]);
+      setModalDay(dayNumber);
       setModalVisible(true);
     }
   };
@@ -60,13 +63,7 @@ export default function CalendarSection() {
   // Función para cerrar el modal
   const handleCloseModal = () => {
     setModalVisible(false);
-    setSelectedSub(null);
-  };
-
-  // Función para eliminar desde el modal
-  const handleDelete = (id) => {
-    deleteSubscription(id);
-    handleCloseModal();
+    setModalDay(null);
   };
 
   return (
@@ -171,7 +168,7 @@ export default function CalendarSection() {
         </View>
       </View>
 
-      {/* ===== MODAL / POPUP DE DETALLE (se abre al tocar un día con cobro) ===== */}
+      {/* ===== MODAL / POPUP DE COBROS DEL DÍA (se abre al tocar un día con cobro) ===== */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -179,46 +176,24 @@ export default function CalendarSection() {
         onRequestClose={handleCloseModal}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+          <View style={styles.modalCard}>
 
-            {/* Cabecera del Modal */}
-            <View style={styles.modalHeader}>
-              <View style={styles.modalIconContainer}>
-                <ShieldCheck weight="bold" size={24} color={colors.primary[500]} />
-              </View>
-              <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
-                <X weight="bold" size={20} color={colors.warm[500]} />
+            {/* Cabecera oscura con el día tocado */}
+            <View style={styles.modalHeaderBar}>
+              <Text style={styles.modalHeaderTitle}>
+                Cobros {modalDay} de {monthNames[currentMonth]}
+              </Text>
+              <TouchableOpacity onPress={handleCloseModal} style={styles.modalCloseButton}>
+                <X weight="bold" size={16} color={colors.warm[0]} />
               </TouchableOpacity>
             </View>
 
-            {/* Información de la Suscripción */}
-            {selectedSub && (
-              <View style={styles.modalBody}>
-                <Text style={styles.modalSubName}>{selectedSub.name}</Text>
-                <Text style={styles.modalSubTag}>{selectedSub.tag || 'Suscripción mensual'}</Text>
-
-                <View style={styles.priceContainerModal}>
-                  <Text style={styles.priceLabel}>Monto a debitar</Text>
-                  <Text style={styles.modalSubPrice}>${selectedSub.price}</Text>
-                </View>
-
-                <View style={styles.infoRow}>
-                  <CalendarBlank weight="bold" size={16} color={colors.warm[500]} />
-                  <Text style={styles.infoText}>Fecha de cobro: Día {selectedSub.day} de cada mes</Text>
-                </View>
-
-                {/* Acciones del Modal */}
-                <View style={styles.modalActions}>
-                  <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() => handleDelete(selectedSub.id)}
-                  >
-                    <Trash weight="bold" size={18} color={colors.red[500]} style={{ marginRight: spacing.sm }} />
-                    <Text style={styles.deleteButtonText}>Eliminar suscripción</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
+            {/* Contenedor blanco con una card por cada suscripción que cobra ese día */}
+            <View style={styles.modalBody}>
+              {daySubs.map((sub) => (
+                <SubscriptionCard key={sub.id} subscription={sub} />
+              ))}
+            </View>
 
           </View>
         </View>
@@ -372,98 +347,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.xl,
   },
-  modalContent: {
+  modalCard: {
     width: '100%',
     maxWidth: 340,
-    backgroundColor: colors.warm[0],
     borderRadius: borderRadius.xl,
-    padding: spacing['2xl'],
+    overflow: 'hidden', // recorta la barra oscura y el cuerpo blanco al radio del modal
     shadowColor: colors.warm[900],
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 10,
   },
-  modalHeader: {
+  modalHeaderBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    backgroundColor: colors.warm[900],
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
   },
-  modalIconContainer: {
-    width: spacing['5xl'], // 48
-    height: spacing['5xl'],
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.primary[100],
-    alignItems: 'center',
-    justifyContent: 'center',
+  modalHeaderTitle: {
+    ...typography.h3,
+    fontWeight: fontWeights.bold,
+    color: colors.warm[0],
   },
-  closeButton: {
-    width: spacing['3xl'], // 32
-    height: spacing['3xl'],
+  modalCloseButton: {
+    width: 28,
+    height: 28,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.warm[100],
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   modalBody: {
-    alignItems: 'flex-start',
-  },
-  modalSubName: {
-    ...typography.h2, // 20
-    fontWeight: fontWeights.bold,
-    color: colors.warm[900],
-  },
-  modalSubTag: {
-    ...typography.bodySmall,
-    color: colors.warm[500],
-    marginTop: spacing.xxs,
-    marginBottom: spacing.xl,
-  },
-  priceContainerModal: {
-    width: '100%',
-    backgroundColor: colors.warm[50],
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.warm[100],
-  },
-  priceLabel: {
-    ...typography.caption,
-    color: colors.warm[500],
-    marginBottom: spacing.xs,
-  },
-  modalSubPrice: {
-    ...typography.h1, // 24/bold
-    color: colors.primary[500],
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing['2xl'],
-  },
-  infoText: {
-    marginLeft: spacing.sm,
-    ...typography.bodySmall,
-    color: colors.warm[700],
-  },
-  modalActions: {
-    width: '100%',
-  },
-  deleteButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.red[100],
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.red[100],
-  },
-  deleteButtonText: {
-    ...typography.bodyMedium,
-    fontWeight: fontWeights.semibold,
-    color: colors.red[500],
+    backgroundColor: colors.warm[0],
+    padding: spacing.xl,
+    gap: spacing.md,
   },
 });
