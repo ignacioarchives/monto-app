@@ -5,7 +5,7 @@ import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { useSubscriptions } from '../../context/SubscriptionContext';
 import ServiceIcon from '../ServiceIcon';
-import SubscriptionCard from '../subscriptions/SubscriptionCard';
+import SubscriptionCardModal from '../subscriptions/SubscriptionCardModal';
 import NestedCardModal from '../ui/NestedCardModal';
 import { getCalendarDayInfo } from '../../utils/calendarHelpers';
 
@@ -45,6 +45,7 @@ export default function CalendarSection() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalDay, setModalDay] = useState(null);
   const daySubs = modalDay ? subscriptions.filter((s) => s.day === modalDay) : [];
+  const dayTotal = daySubs.reduce((sum, s) => sum + Number(s.price), 0);
 
   // Manejador al tocar un día del calendario
   const handleDayPress = (dayNumber) => {
@@ -176,8 +177,13 @@ export default function CalendarSection() {
       >
         <View style={styles.modalCardsList}>
           {daySubs.map((sub) => (
-            <SubscriptionCard key={sub.id} subscription={sub} />
+            <SubscriptionCardModal key={sub.id} subscription={sub} />
           ))}
+        </View>
+
+        <View style={styles.modalTotalRow}>
+          <Text style={styles.modalTotalLabel}>Total</Text>
+          <Text style={styles.modalTotalAmount}>${dayTotal.toLocaleString('es-AR')}</Text>
         </View>
       </NestedCardModal>
 
@@ -322,6 +328,25 @@ const styles = StyleSheet.create({
 
   /* --- CONTENIDO DEL MODAL (NestedCardModal se encarga del wrapper/card/header) --- */
   modalCardsList: {
-    gap: spacing.md,
+    marginHorizontal: -spacing.xl, // bleed: ocupa todo el ancho del innerCard, ignorando su padding
+  },
+  modalTotalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.lg,
+    paddingTop: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: colors.warm[100],
+  },
+  modalTotalLabel: {
+    ...typography.bodyLarge,
+    fontWeight: fontWeights.medium,
+    color: semanticColors.text.secondary,
+  },
+  modalTotalAmount: {
+    ...typography.h3,
+    fontWeight: fontWeights.semibold,
+    color: semanticColors.text.primary,
   },
 });
