@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   outerCard: {
     width: '100%',
     maxWidth: 340,
-    backgroundColor: colors.warm[25],
+    backgroundColor: colors.warm[0], // mismo blanco que innerCard: un solo tono, sin efecto de doble capa
     borderRadius: borderRadius.xl,
     borderWidth: 1,
     borderColor: colors.warm[200],
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    ...typography.h3,
-    fontWeight: fontWeights.bold,
+    ...typography.bodyLarge, // 16px
+    fontWeight: fontWeights.medium,
     color: semanticColors.text.primary,
     flex: 1,
   },

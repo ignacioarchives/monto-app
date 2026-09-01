@@ -336,17 +336,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.lg,
     paddingTop: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: colors.warm[100],
+    marginHorizontal: -spacing.xl, // mismo bleed que modalCardsList, para alinear con "Cobros"
   },
   modalTotalLabel: {
-    ...typography.bodyLarge,
+    ...typography.bodyLarge, // 16px, misma tipografía que el título del modal (NestedCardModal)
     fontWeight: fontWeights.medium,
     color: semanticColors.text.secondary,
   },
   modalTotalAmount: {
     ...typography.h3,
-    fontWeight: fontWeights.semibold,
+    fontWeight: fontWeights.bold,
     color: semanticColors.text.primary,
   },
 });

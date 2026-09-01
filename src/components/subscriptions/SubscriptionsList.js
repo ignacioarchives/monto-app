@@ -8,7 +8,7 @@ import { SORT_OPTIONS } from '../../hooks/useSubscriptionsScreen';
 import SubscriptionCard from './SubscriptionCard';
 import SortMenu from './SortMenu';
 
-export default function SubscriptionsList({ subscriptions, sortOption, onChangeSortOption }) {
+export default function SubscriptionsList({ subscriptions, sortOption, onChangeSortOption, onPressSubscription }) {
   const menuButtonRef = useRef(null);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState(null);
@@ -49,7 +49,7 @@ export default function SubscriptionsList({ subscriptions, sortOption, onChangeS
           <Text style={styles.emptyText}>No tenés suscripciones cargadas</Text>
         ) : (
           subscriptions.map((sub) => (
-            <SubscriptionCard key={sub.id} subscription={sub} />
+            <SubscriptionCard key={sub.id} subscription={sub} onPress={() => onPressSubscription(sub)} />
           ))
         )}
       </View>

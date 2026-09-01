@@ -20,7 +20,7 @@ export default function SubscriptionCardModal({ subscription }) {
 
   return (
     <View style={styles.card}>
-      <ServiceIcon serviceName={icon || name} size={40} />
+      <ServiceIcon serviceName={icon || name} size={40} background={colors.warm[0]} />
 
       <View style={styles.content}>
         <Text style={styles.name}>{name}</Text>
@@ -38,9 +38,10 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: spacing.lg,
+    gap: spacing.sm, // más cerca el ícono del título/sub
     width: '100%',
     padding: spacing.lg,
+    paddingLeft: spacing.xs,
     borderBottomWidth: 1,
     borderBottomColor: colors.warm[100],
   },

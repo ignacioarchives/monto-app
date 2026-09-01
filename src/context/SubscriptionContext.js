@@ -99,6 +99,13 @@ export const SubscriptionProvider = ({ children }) => {
     setSubscriptions((prev) => prev.filter((sub) => sub.id !== id));
   };
 
+  // Función para editar campos de una suscripción existente
+  const updateSubscription = (id, updates) => {
+    setSubscriptions((prev) =>
+      prev.map((sub) => (sub.id === id ? { ...sub, ...updates } : sub))
+    );
+  };
+
   // Helper: Función que calcula la fecha exacta del próximo cobro
   const calculateNextBillingDate = (dayOfPayment) => {
     const today = new Date();
@@ -127,6 +134,7 @@ export const SubscriptionProvider = ({ children }) => {
         subscriptions,
         addSubscription,
         deleteSubscription,
+        updateSubscription,
         calculateNextBillingDate,
         monthlyHistory,
       }}

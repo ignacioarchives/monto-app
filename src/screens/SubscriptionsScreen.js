@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -10,9 +10,11 @@ import { useSubscriptionsScreen } from '../hooks/useSubscriptionsScreen';
 import HomeTopBar from '../components/home/HomeTopBar';
 import NextChargeHero from '../components/subscriptions/NextChargeHero';
 import SubscriptionsList from '../components/subscriptions/SubscriptionsList';
+import EditSubscriptionModal from '../components/subscriptions/EditSubscriptionModal';
 
 export default function SubscriptionsScreen() {
   const { sortedSubscriptions, nextCharge, sortOption, setSortOption } = useSubscriptionsScreen();
+  const [editingSubscription, setEditingSubscription] = useState(null);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -29,9 +31,16 @@ export default function SubscriptionsScreen() {
             subscriptions={sortedSubscriptions}
             sortOption={sortOption}
             onChangeSortOption={setSortOption}
+            onPressSubscription={setEditingSubscription}
           />
         </View>
       </ScrollView>
+
+      <EditSubscriptionModal
+        visible={!!editingSubscription}
+        subscription={editingSubscription}
+        onClose={() => setEditingSubscription(null)}
+      />
     </SafeAreaView>
   );
 }

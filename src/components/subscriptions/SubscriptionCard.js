@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors, semanticColors } from '../../theme/colors';
 import { typography, fontWeights } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
@@ -7,7 +7,7 @@ import { useSubscriptions } from '../../context/SubscriptionContext';
 import { MONTH_NAMES } from '../../data/months';
 import ServiceIcon from '../ServiceIcon';
 
-export default function SubscriptionCard({ subscription }) {
+export default function SubscriptionCard({ subscription, onPress }) {
   const { name, price, icon, day } = subscription;
   const { calculateNextBillingDate } = useSubscriptions();
   const formattedPrice = `$${Number(price).toLocaleString('es-AR')}`;
@@ -16,7 +16,7 @@ export default function SubscriptionCard({ subscription }) {
   const nextBillingLabel = `${nextBillingDate.getDate()} de ${MONTH_NAMES[nextBillingDate.getMonth()]}`;
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <ServiceIcon serviceName={icon || name} size={40} />
 
       <View style={styles.content}>
@@ -27,7 +27,7 @@ export default function SubscriptionCard({ subscription }) {
       </View>
 
       <Text style={styles.priceText}>{formattedPrice}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
